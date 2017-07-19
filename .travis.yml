@@ -1,0 +1,7 @@
+language: dart
+dart:
+  - stable
+  - dev
+before_script:
+  - dartanalyzer .
+  - dartfmt --dry-run --set-exit-if-changed .
