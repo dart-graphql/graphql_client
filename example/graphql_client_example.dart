@@ -43,6 +43,8 @@ main() async {
     ),
   );
 
-  await graphQLClient
-      .execute(builtQuery, headers: {'Authorization': 'bearer $apiToken'});
+  await graphQLClient.execute<Query>(
+    builtQuery,
+    headers: {'Authorization': 'bearer $apiToken'},
+  );
 }
