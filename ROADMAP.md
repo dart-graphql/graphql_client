@@ -43,5 +43,6 @@ GQL query you built and is handling reconciliation between the HTTP response and
   - [ ] Factory
   - [ ] GraphQL Response
 - [ ] **Optionnal** GraphQL dart classes generation from a GQL schema
+- [ ] **Optionnal** Translate GQL queries from String to `graphql_client` DSL
    
 [1]: http://facebook.github.io/graphql/
