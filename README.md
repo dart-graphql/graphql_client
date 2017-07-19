@@ -1,4 +1,4 @@
-# graphql_client
+# graphql_client [![Build Status](https://travis-ci.org/hourliert/graphql_client.svg?branch=master)](https://travis-ci.org/hourliert/graphql_client)
 
 GraphQL Client written in Dart 🎯.
 
