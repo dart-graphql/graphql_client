@@ -27,24 +27,34 @@ main() async {
     client: client,
     logger: logger,
     endPoint: endPoint,
-  );
+  )..loadSchema(GithubGraphQLSchema);
 
-  Query builtQuery = new Query(
-    viewer: new Viewer(
-      avatarUrl: new GraphQLString(),
-      login: new GraphQLString(),
-      bio: new GraphQLString(),
-      gists: new GraphQLConnection<Gist>(
-        nodes: new Gist(
-          name: new GraphQLString(),
-          description: new GraphQLString(),
-        ),
-      ),
-    ),
-  );
+  //language=GraphQL
+  String gqlQuery = '''
+    query {
+      viewer {
+        avatarUrl(size: 200)
+        login
+        bio @include(if: false)
+        gists(first: 5) {
+          nodes {
+            ...ShortGist
+          }
+        }
+      }
+    }
+    
+    fragment ShortGist on Gist {
+      name
+      description
+    }
+  ''';
 
-  await graphQLClient.execute<Query>(
-    builtQuery,
+  var res = await graphQLClient.execute<GithubGraphQLSchema>(
+    gqlQuery,
     headers: {'Authorization': 'bearer $apiToken'},
   );
+
+  print(res.viewer.avatarUrl.value);
+  print(res.viewer.gists.nodes.first.name.value);
 }

@@ -5,12 +5,6 @@
 /// Support for doing something awesome.
 ///
 /// More dartdocs go here.
-library graphql_client;
+library graphql_client.schema;
 
-export 'client.dart';
-export 'utils.dart';
-export 'annotations.dart';
-export 'scalar_types.dart';
-export 'connection.dart';
-export 'query_reconcilier.dart';
-export 'schema.dart';
+export 'src/schema.dart';

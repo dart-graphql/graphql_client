@@ -6,17 +6,19 @@ library graphql_client.src.client;
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:mirrors';
 
 import 'package:http/http.dart';
 import 'package:logging/logging.dart';
 
-import 'query_builder.dart';
 import 'query_reconcilier.dart';
+import 'schema.dart';
 
 class GraphQLClient {
   Client client;
   String endPoint;
   Logger logger;
+  ClassMirror _schemaMirror;
 
   GraphQLClient({
     this.client,
@@ -24,21 +26,29 @@ class GraphQLClient {
     this.logger,
   });
 
-  Future<T> execute<T>(T query,
+  void loadSchema(Type schemaClass) {
+    _schemaMirror = reflectClass(schemaClass);
+  }
+
+  Future<T> execute<T extends Schema>(String gqlQuery,
       {Map<String, String> headers = const {}}) async {
-    String gqlQuery = queryBuilder<T>(query);
+    if (_schemaMirror == null) {
+      throw new StateError("You must load a schema before executing a query");
+    }
 
     logger.finest('Query: $gqlQuery');
 
-    var response = await client.post(endPoint,
-        headers: headers,
-        body: JSON.encode(
-          {'query': gqlQuery},
-        ));
+    var response = await client.post(
+      endPoint,
+      headers: headers,
+      body: JSON.encode(
+        {'query': gqlQuery},
+      ),
+    );
 
     logger.finest('Response: ${response.body}');
 
-    T reconciliedQuery = reconcileResponse<T>(query, response.body);
+    T reconciliedQuery = reconcileResponse<T>(_schemaMirror, response.body);
 
     logger.finest('Result: \n$reconciliedQuery');
 

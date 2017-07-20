@@ -4,11 +4,11 @@
 
 import 'package:graphql_client/graphql_client.dart';
 
-class Query {
+class GithubGraphQLSchema implements Schema {
   Viewer viewer;
 
-  Query({this.viewer});
-  Query.fromJSON(Map data) : viewer = new Viewer.fromJSON(data['viewer']);
+  GithubGraphQLSchema.fromJSON(Map data)
+      : viewer = new Viewer.fromJSON(data['viewer']);
 
   @override
   String toString() {
@@ -20,15 +20,12 @@ ${indentLines(viewer.toString(), 4)}
   }
 }
 
-class Viewer {
+class Viewer implements Schema {
   GraphQLString login;
-  @GraphQLArguments('size: 200')
   GraphQLString avatarUrl;
   GraphQLString bio;
-  @GraphQLArguments('last: 2')
   GraphQLConnection<Gist> gists;
 
-  Viewer({this.login, this.avatarUrl, this.bio, this.gists});
   Viewer.fromJSON(Map data)
       : login = new GraphQLString(data['login']),
         avatarUrl = new GraphQLString(data['avatarUrl']),
@@ -47,11 +44,10 @@ ${indentLines(gists.toString(), 2)}
   }
 }
 
-class Gist {
+class Gist implements Schema {
   GraphQLString name;
   GraphQLString description;
 
-  Gist({this.name, this.description});
   Gist.fromJSON(Map data)
       : name = new GraphQLString(data['name']),
         description = new GraphQLString(data['description']);

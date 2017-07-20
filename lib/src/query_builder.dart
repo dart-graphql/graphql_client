@@ -9,6 +9,7 @@ import 'dart:mirrors';
 import 'annotations.dart';
 import 'connection.dart';
 
+@Deprecated('Not used anymore')
 String buildInstanceQuery(InstanceMirror instanceMirror) {
   ClassMirror classMirror = instanceMirror.type;
   var classDeclarations = classMirror.declarations;
@@ -60,6 +61,7 @@ String buildInstanceQuery(InstanceMirror instanceMirror) {
   return '{ ${gqlQuery.trim()} }';
 }
 
+@Deprecated('Not used anymore')
 String queryBuilder<T>(T query) {
   InstanceMirror queryInstanceMirror = reflect(query);
   String gqlQuery = buildInstanceQuery(queryInstanceMirror);
