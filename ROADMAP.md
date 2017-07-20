@@ -21,7 +21,7 @@ GQL query you built and is handling reconciliation between the HTTP response and
   - [x] Arguments
   - [ ] Aliases
   - [x] Fragments
-  - [ ] Variables
+  - [x] Variables
   - [x] Directives
   - [x] **Optionnal** Inline Fragments
 - `VariableBuilder`:
