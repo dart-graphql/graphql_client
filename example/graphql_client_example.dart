@@ -27,7 +27,7 @@ main() async {
     client: client,
     logger: logger,
     endPoint: endPoint,
-  )..loadSchema(new GithubGraphQLSchema());
+  )..loadSchema(GithubGraphQLSchema);
 
   //language=GraphQL
   String gqlQuery = '''
@@ -35,14 +35,18 @@ main() async {
       viewer {
         avatarUrl(size: 200)
         login
-        bio
+        bio @include(if: false)
         gists(first: 5) {
           nodes {
-            name
-            description
+            ...ShortGist
           }
         }
       }
+    }
+    
+    fragment ShortGist on Gist {
+      name
+      description
     }
   ''';
 
@@ -52,4 +56,5 @@ main() async {
   );
 
   print(res.viewer.avatarUrl.value);
+  print(res.viewer.gists.nodes.first.name.value);
 }

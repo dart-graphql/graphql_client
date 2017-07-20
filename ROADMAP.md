@@ -17,14 +17,13 @@ GQL query you built and is handling reconciliation between the HTTP response and
 ## Roadmap
 - `QueryBuilder`:
   - [ ] Builder
-  - [ ] Fields
-  - [ ] Alias
-  - [ ] Arguments
+  - [x] Fields
+  - [x] Arguments
   - [ ] Aliases
-  - [ ] Fragments
+  - [x] Fragments
   - [ ] Variables
-  - [ ] Directives
-  - [ ] **Optionnal** Inline Fragments
+  - [x] Directives
+  - [x] **Optionnal** Inline Fragments
 - `VariableBuilder`:
   - [ ] Builder
 - `MutationBuilder`:
@@ -33,6 +32,7 @@ GQL query you built and is handling reconciliation between the HTTP response and
   - [ ] Variables
 - `QueryReconcilier`:
   - [ ] Reconciler
+  - [ ] Reconcile Aliases
 - `Scalar Types`:
   - [ ] Implements default types
 - `GraphQLAnnotations` (used to define queries and mutations):
@@ -40,9 +40,9 @@ GQL query you built and is handling reconciliation between the HTTP response and
   - [ ] Field directive
   - [ ] Field alias
 - `GraphQLClient`:
-  - [ ] Factory
+  - [x] Factory
   - [ ] GraphQL Response
 - [ ] **Optionnal** GraphQL dart classes generation from a GQL schema
-- [ ] **Optionnal** Translate GQL queries from String to `graphql_client` DSL
+- [x] **Optionnal** Translate GQL queries from String to `graphql_client` DSL
    
 [1]: http://facebook.github.io/graphql/

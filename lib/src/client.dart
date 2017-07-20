@@ -26,8 +26,8 @@ class GraphQLClient {
     this.logger,
   });
 
-  void loadSchema(Schema schema) {
-    _schemaMirror = reflect(schema).type;
+  void loadSchema(Type schemaClass) {
+    _schemaMirror = reflectClass(schemaClass);
   }
 
   Future<T> execute<T extends Schema>(String gqlQuery,
@@ -38,11 +38,13 @@ class GraphQLClient {
 
     logger.finest('Query: $gqlQuery');
 
-    var response = await client.post(endPoint,
-        headers: headers,
-        body: JSON.encode(
-          {'query': gqlQuery},
-        ));
+    var response = await client.post(
+      endPoint,
+      headers: headers,
+      body: JSON.encode(
+        {'query': gqlQuery},
+      ),
+    );
 
     logger.finest('Response: ${response.body}');
 

@@ -23,10 +23,8 @@ ${indentLines(viewer.toString(), 4)}
 
 class Viewer {
   GraphQLString login;
-  @GraphQLArguments('size: 200')
   GraphQLString avatarUrl;
   GraphQLString bio;
-  @GraphQLArguments('last: 2')
   GraphQLConnection<Gist> gists;
 
   Viewer({this.login, this.avatarUrl, this.bio, this.gists});
