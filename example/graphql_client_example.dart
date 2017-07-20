@@ -27,8 +27,7 @@ main() async {
     client: client,
     logger: logger,
     endPoint: endPoint,
-    schema: new GithubGraphQLSchema(),
-  );
+  )..loadSchema(new GithubGraphQLSchema());
 
   //language=GraphQL
   String gqlQuery = '''
@@ -47,7 +46,7 @@ main() async {
     }
   ''';
 
-  GithubGraphQLSchema res = await graphQLClient.execute(
+  var res = await graphQLClient.execute<GithubGraphQLSchema>(
     gqlQuery,
     headers: {'Authorization': 'bearer $apiToken'},
   );
