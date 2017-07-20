@@ -30,7 +30,8 @@ class GraphQLClient {
     _schemaMirror = reflectClass(schemaClass);
   }
 
-  Future<T> execute<T extends Schema>(String gqlQuery,
+  Future<T> execute<T extends Schema>(
+      String gqlQuery, Map<String, dynamic> variables,
       {Map<String, String> headers = const {}}) async {
     if (_schemaMirror == null) {
       throw new StateError("You must load a schema before executing a query");
@@ -42,7 +43,10 @@ class GraphQLClient {
       endPoint,
       headers: headers,
       body: JSON.encode(
-        {'query': gqlQuery},
+        {
+          'query': gqlQuery,
+          'variables': variables,
+        },
       ),
     );
 
