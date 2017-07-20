@@ -5,6 +5,5 @@
 library graphql_client.src.schema;
 
 abstract class Schema {
-  Schema();
   Schema.fromJSON(Map data);
 }
