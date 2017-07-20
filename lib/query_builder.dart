@@ -5,6 +5,7 @@
 /// Support for doing something awesome.
 ///
 /// More dartdocs go here.
+@Deprecated('Not used anymore')
 library graphql_client.query_builder;
 
 export 'src/query_builder.dart';

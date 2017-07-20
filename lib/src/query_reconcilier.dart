@@ -7,10 +7,9 @@ library graphql_client.src.query_reconcilier;
 import 'dart:mirrors';
 import 'dart:convert';
 
-T reconcileResponse<T>(T query, String response) {
+reconcileResponse<T>(ClassMirror schemaMirror, String response) {
   Map jsonResponse = JSON.decode(response);
-  ClassMirror classMirror = reflect(query).type;
 
-  return classMirror
+  return schemaMirror
       .newInstance(const Symbol('fromJSON'), [jsonResponse['data']]).reflectee;
 }

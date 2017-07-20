@@ -27,24 +27,30 @@ main() async {
     client: client,
     logger: logger,
     endPoint: endPoint,
+    schema: new GithubGraphQLSchema(),
   );
 
-  Query builtQuery = new Query(
-    viewer: new Viewer(
-      avatarUrl: new GraphQLString(),
-      login: new GraphQLString(),
-      bio: new GraphQLString(),
-      gists: new GraphQLConnection<Gist>(
-        nodes: new Gist(
-          name: new GraphQLString(),
-          description: new GraphQLString(),
-        ),
-      ),
-    ),
-  );
+  //language=GraphQL
+  String gqlQuery = '''
+    query {
+      viewer {
+        avatarUrl(size: 200)
+        login
+        bio
+        gists(first: 5) {
+          nodes {
+            name
+            description
+          }
+        }
+      }
+    }
+  ''';
 
-  await graphQLClient.execute<Query>(
-    builtQuery,
+  GithubGraphQLSchema res = await graphQLClient.execute(
+    gqlQuery,
     headers: {'Authorization': 'bearer $apiToken'},
   );
+
+  print(res.viewer.avatarUrl.value);
 }

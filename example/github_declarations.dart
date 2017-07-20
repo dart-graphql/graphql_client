@@ -4,11 +4,12 @@
 
 import 'package:graphql_client/graphql_client.dart';
 
-class Query {
+class GithubGraphQLSchema implements Schema {
   Viewer viewer;
 
-  Query({this.viewer});
-  Query.fromJSON(Map data) : viewer = new Viewer.fromJSON(data['viewer']);
+  GithubGraphQLSchema({this.viewer});
+  GithubGraphQLSchema.fromJSON(Map data)
+      : viewer = new Viewer.fromJSON(data['viewer']);
 
   @override
   String toString() {
