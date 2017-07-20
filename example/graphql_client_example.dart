@@ -31,7 +31,7 @@ main() async {
 
   //language=GraphQL
   String gqlQuery = '''
-    query DefaultQuery(\$avatarSize: Int = 200){
+    query DefaultQuery(\$avatarSize: Int = 200) {
       viewer {
         avatarUrl(size: \$avatarSize)
         login
@@ -41,6 +41,12 @@ main() async {
             ...ShortGist
           }
         }
+        repository(name: "graphql_client") {
+          issue(number: 5) {
+            id
+            title
+          }
+        }
       }
     }
     
@@ -48,11 +54,26 @@ main() async {
       name
       description
     }
+    
+    mutation CommentIssue(\$issueID: ID!, \$comment: String!) {
+      addComment(input: {subjectId: \$issueID, body: \$comment}) {
+        commentEdge {
+          node {
+            body
+          }
+        }
+      }
+    }
   ''';
 
   var res = await graphQLClient.execute<GithubGraphQLSchema>(
     gqlQuery,
-    {'avatarSize': 400},
+    {
+      'avatarSize': 400,
+      'issueID': 'MDU6SXNzdWUyNDQzNjk1NTI=',
+      'comment': 'Generated comment',
+    },
+    'CommentIssue',
     headers: {'Authorization': 'bearer $apiToken'},
   );
 
