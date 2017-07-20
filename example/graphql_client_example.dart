@@ -31,9 +31,9 @@ main() async {
 
   //language=GraphQL
   String gqlQuery = '''
-    query {
+    query DefaultQuery(\$avatarSize: Int = 200){
       viewer {
-        avatarUrl(size: 200)
+        avatarUrl(size: \$avatarSize)
         login
         bio @include(if: false)
         gists(first: 5) {
@@ -52,6 +52,7 @@ main() async {
 
   var res = await graphQLClient.execute<GithubGraphQLSchema>(
     gqlQuery,
+    {'avatarSize': 400},
     headers: {'Authorization': 'bearer $apiToken'},
   );
 
