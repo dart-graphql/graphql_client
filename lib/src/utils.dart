@@ -2,13 +2,19 @@
 // Use of this source code is governed by a MIT-style license
 // that can be found in the LICENSE file.
 
-library graphql_client.src.utils;
+library graphql_client.utils;
 
-/// Indents each line of multi-lines text
-String indentLines(String source, int size) {
-  const delimiter = '\n';
-  return source
-      .split(delimiter)
-      .map((String s) => "${new List.filled(size, ' ').join('')}$s")
-      .join(delimiter);
+import 'dart:math';
+
+import 'package:logging/logging.dart';
+
+var maxInt = 100;
+var rng = new Random();
+
+int getRandomInt([int max = 100]) => rng.nextInt(max);
+
+void logMessage([Logger logger, Level logLevel, String message]) {
+  if (logger != null) {
+    logger.log(logLevel, message);
+  }
 }

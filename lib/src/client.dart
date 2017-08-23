@@ -2,56 +2,87 @@
 // Use of this source code is governed by a MIT-style license
 // that can be found in the LICENSE file.
 
-library graphql_client.src.client;
+library graphql_client.client;
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:mirrors';
 
 import 'package:http/http.dart';
 import 'package:logging/logging.dart';
 
-import 'query_reconcilier.dart';
-import 'schema.dart';
+import 'converter.dart';
+import 'graphql_definitions.dart';
+import 'utils.dart';
 
 class GraphQLClient {
-  Client client;
-  String endPoint;
-  Logger logger;
-  ClassMirror _schemaMirror;
+  final Client _client;
 
-  GraphQLClient({
-    this.client,
-    this.endPoint,
-    this.logger,
-  });
+  final Logger logger;
+  final String endPoint;
 
-  void loadSchema(Type schemaClass) {
-    _schemaMirror = reflectClass(schemaClass);
-  }
+  GraphQLClient(this._client, {this.logger, this.endPoint});
 
-  Future<T> execute<T extends Schema>(String gqlQuery,
-      {Map<String, String> headers = const {}}) async {
-    if (_schemaMirror == null) {
-      throw new StateError("You must load a schema before executing a query");
-    }
+  Future<T> execute<T extends GQLOperation>(GQLOperation operation,
+      {Map variables = const {}, Map headers}) async {
+    var requestBody = {
+      'query': GRAPHQL.encode(operation),
+      'variables': variables,
+      'operationName': operation.name,
+    };
 
-    logger.finest('Query: $gqlQuery');
+    logMessage(logger, Level.INFO,
+        'Posting GQL request to $endPoint with operation ${operation.name}');
+    logMessage(logger, Level.FINE, 'with body GQL request to $requestBody');
 
-    var response = await client.post(
+    var res = await _client.post(
       endPoint,
       headers: headers,
-      body: JSON.encode(
-        {'query': gqlQuery},
-      ),
+      body: JSON.encode(requestBody),
     );
 
-    logger.finest('Response: ${response.body}');
+    var data = JSON.decode(res.body)['data'];
 
-    T reconciliedQuery = reconcileResponse<T>(_schemaMirror, response.body);
+    logMessage(logger, Level.INFO, 'Receive response');
+    logMessage(logger, Level.FINE, 'with body $data');
 
-    logger.finest('Result: \n$reconciliedQuery');
+    _resolveQuery(operation, data);
 
-    return reconciliedQuery;
+    logMessage(logger, Level.INFO, 'GQL query resolved');
+
+    return operation;
+  }
+
+  Future<T> executeOperations<T extends GQLOperation>(
+      Map<String, GQLOperation> operations, String operationName,
+      {Map variables = const {}, Map headers}) async {
+    var operation = operations[operationName];
+
+    return execute(operation, headers: headers, variables: variables);
+  }
+
+  void _resolve(GQLOperation resolver, Map data) {
+    var key = (resolver is Alias) ? resolver.alias : resolver.name;
+
+    if (resolver is Scalar) {
+      resolver.value = data[key];
+    } else if (resolver is ScalarCollection) {
+      var nodeResolver = resolver.nodesResolver;
+      List nodesData = data[key]['nodes'];
+
+      resolver.nodes = new List.generate(
+          nodesData.length, (_) => nodeResolver.selfFactory());
+
+      for (int i = 0; i < nodesData.length; i++) {
+        _resolveQuery(resolver.nodes[i], nodesData[i]);
+      }
+    } else {
+      _resolveQuery(resolver, data[key]);
+    }
+  }
+
+  void _resolveQuery(GQLOperation operation, Map data) {
+    operation.resolvers.forEach((GQLOperation r) => _resolve(r, data));
+    operation.fragments.forEach((Fragment f) =>
+        f.resolvers.forEach((GQLOperation o) => _resolve(o, data)));
   }
 }

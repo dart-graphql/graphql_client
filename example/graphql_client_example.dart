@@ -9,7 +9,7 @@ import 'package:logging/logging.dart';
 
 import 'package:graphql_client/graphql_client.dart';
 
-import 'github_declarations.dart';
+import 'login_query.dart';
 
 main() async {
   Logger.root
@@ -24,37 +24,52 @@ main() async {
   final client = new Client();
   final logger = new Logger('GraphQLClient');
   final graphQLClient = new GraphQLClient(
-    client: client,
+    client,
     logger: logger,
     endPoint: endPoint,
-  )..loadSchema(GithubGraphQLSchema);
-
-  //language=GraphQL
-  String gqlQuery = '''
-    query {
-      viewer {
-        avatarUrl(size: 200)
-        login
-        bio @include(if: false)
-        gists(first: 5) {
-          nodes {
-            ...ShortGist
-          }
-        }
-      }
-    }
-    
-    fragment ShortGist on Gist {
-      name
-      description
-    }
-  ''';
-
-  var res = await graphQLClient.execute<GithubGraphQLSchema>(
-    gqlQuery,
-    headers: {'Authorization': 'bearer $apiToken'},
   );
 
-  print(res.viewer.avatarUrl.value);
-  print(res.viewer.gists.nodes.first.name.value);
+  var query = new LoginQuery();
+  var mutation = new AddTestCommentMutation();
+
+  LoginQuery queryRes = await graphQLClient.execute(
+    query,
+    variables: {'issueId': 'MDU6SXNzdWUyNDQzNjk1NTI', 'body': 'Test issue 2'},
+    headers: {
+      'Authorization': 'bearer $apiToken',
+    },
+  );
+
+  print('\n\n===================== TEST =====================');
+  print('=== . ===');
+  print(queryRes.viewer.login.value);
+  print(queryRes.viewer.bio.value);
+  print(queryRes.viewer.bio2.value);
+
+  print('=== .repository ===');
+  print(queryRes.viewer.repository.createdAt.value);
+  print(queryRes.viewer.repository.description.value);
+  print(queryRes.viewer.repository.id.value);
+  print(queryRes.viewer.repository.repoName.value);
+
+  print('=== .gist ===');
+  print(queryRes.viewer.gist.description.value);
+
+  print('=== .repositories ===');
+  queryRes.viewer.repositories.nodes.forEach((n) {
+    print(n.repoName.value);
+  });
+  print('=================== END TEST ===================\n\n');
+
+  AddTestCommentMutation mutationRes = await graphQLClient.execute(
+    mutation,
+    variables: {'issueId': 'MDU6SXNzdWUyNDQzNjk1NTI', 'body': 'Test issue 2'},
+    headers: {
+      'Authorization': 'bearer $apiToken',
+    },
+  );
+
+  print('\n\n===================== TEST =====================');
+  print(mutationRes.addComment.commentEdge.node.body.value);
+  print('=================== END TEST ===================\n\n');
 }
