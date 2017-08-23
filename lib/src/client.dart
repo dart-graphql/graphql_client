@@ -13,6 +13,7 @@ import 'package:logging/logging.dart';
 import 'converter.dart';
 import 'graphql_definitions.dart';
 import 'utils.dart';
+import 'errors.dart';
 
 class GraphQLClient {
   final Client _client;
@@ -22,34 +23,48 @@ class GraphQLClient {
 
   GraphQLClient(this._client, {this.logger, this.endPoint});
 
-  Future<T> execute<T extends GQLOperation>(GQLOperation operation,
+  Future<T> execute<T extends GQLOperation>(T operation,
       {Map variables = const {}, Map headers}) async {
-    var requestBody = {
-      'query': GRAPHQL.encode(operation),
-      'variables': variables,
-      'operationName': operation.name,
-    };
+    try {
+      var requestBody = {
+        'query': GRAPHQL.encode(operation),
+        'variables': variables,
+        'operationName': operation.name,
+      };
 
-    logMessage(logger, Level.INFO,
-        'Posting GQL request to $endPoint with operation ${operation.name}');
-    logMessage(logger, Level.FINE, 'with body GQL request to $requestBody');
+      logMessage(logger, Level.INFO,
+          'Posting GQL request to $endPoint with operation ${operation.name}');
+      logMessage(logger, Level.FINE, 'with body GQL request to $requestBody');
 
-    var res = await _client.post(
-      endPoint,
-      headers: headers,
-      body: JSON.encode(requestBody),
-    );
+      var res = await _client.post(
+        endPoint,
+        headers: headers,
+        body: JSON.encode(requestBody),
+      );
 
-    var data = JSON.decode(res.body)['data'];
+      var data = JSON.decode(res.body)['data'];
 
-    logMessage(logger, Level.INFO, 'Receive response');
-    logMessage(logger, Level.FINE, 'with body $data');
+      logMessage(logger, Level.INFO, 'Receive response');
+      logMessage(logger, Level.FINE, 'with body $data');
 
-    _resolveQuery(operation, data);
+      _resolveQuery(operation, data);
 
-    logMessage(logger, Level.INFO, 'GQL query resolved');
+      logMessage(logger, Level.INFO, 'GQL query resolved');
 
-    return operation;
+      return operation;
+    } on EncoderError catch (_) {
+      logMessage(logger, Level.SHOUT, 'Error when encoding GQL query');
+      rethrow;
+    } on ResolverError catch (_) {
+      logMessage(logger, Level.SHOUT, 'Error when resolving GQL query');
+      rethrow;
+    } on ClientException catch (_) {
+      logMessage(logger, Level.SHOUT, 'Error during the HTTP request');
+      rethrow;
+    } catch (e) {
+      logMessage(logger, Level.SHOUT, 'Unknow error');
+      rethrow;
+    }
   }
 
   Future<T> executeOperations<T extends GQLOperation>(
@@ -58,6 +73,17 @@ class GraphQLClient {
     var operation = operations[operationName];
 
     return execute(operation, headers: headers, variables: variables);
+  }
+
+  void _resolveQuery(GQLOperation operation, Map data) {
+    try {
+      operation.resolvers.forEach((GQLOperation r) => _resolve(r, data));
+      operation.fragments.forEach((Fragment f) =>
+          f.resolvers.forEach((GQLOperation o) => _resolve(o, data)));
+    } catch (e) {
+      throw new ResolverError(
+          'Error when resolving the GQL query: ${e.toString()}');
+    }
   }
 
   void _resolve(GQLOperation resolver, Map data) {
@@ -78,11 +104,5 @@ class GraphQLClient {
     } else {
       _resolveQuery(resolver, data[key]);
     }
-  }
-
-  void _resolveQuery(GQLOperation operation, Map data) {
-    operation.resolvers.forEach((GQLOperation r) => _resolve(r, data));
-    operation.fragments.forEach((Fragment f) =>
-        f.resolvers.forEach((GQLOperation o) => _resolve(o, data)));
   }
 }

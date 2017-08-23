@@ -9,10 +9,17 @@ class GraphQLEncoder extends Converter<GQLOperation, String> {
 
   @override
   String convert(GQLOperation operation) {
-    var operationGQL = _encodeOperation(operation);
-    var fragmentsGQL = _encodeNestedOperationFragments(operation);
+    String gql;
 
-    var gql = '$operationGQL\n$fragmentsGQL';
+    try {
+      var operationGQL = _encodeOperation(operation);
+      var fragmentsGQL = _encodeNestedOperationFragments(operation);
+
+      gql = '$operationGQL\n$fragmentsGQL';
+    } catch (e) {
+      throw new EncoderError(
+          'Error when encoding the given GQL query: ${e.toString()}');
+    }
 
     return gql;
   }

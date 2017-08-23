@@ -9,7 +9,7 @@ import 'package:logging/logging.dart';
 
 import 'package:graphql_client/graphql_client.dart';
 
-import 'login_query.dart';
+import 'queries_examples.dart';
 
 main() async {
   Logger.root
