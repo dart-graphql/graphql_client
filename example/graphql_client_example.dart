@@ -32,44 +32,77 @@ main() async {
   var query = new LoginQuery();
   var mutation = new AddTestCommentMutation();
 
-  LoginQuery queryRes = await graphQLClient.execute(
-    query,
-    variables: {'issueId': 'MDU6SXNzdWUyNDQzNjk1NTI', 'body': 'Test issue 2'},
-    headers: {
-      'Authorization': 'bearer $apiToken',
-    },
-  );
+  try {
+    print('\n\n===================== TEST 1 =====================');
 
-  print('\n\n===================== TEST =====================');
-  print('=== . ===');
-  print(queryRes.viewer.login.value);
-  print(queryRes.viewer.bio.value);
-  print(queryRes.viewer.bio2.value);
+    LoginQuery queryRes = await graphQLClient.execute(
+      query,
+      variables: {'issueId': 'MDU6SXNzdWUyNDQzNjk1NTI', 'body': 'Test issue 2'},
+      headers: {
+        'Authorization': 'bearer $apiToken',
+      },
+    );
 
-  print('=== .repository ===');
-  print(queryRes.viewer.repository.createdAt.value);
-  print(queryRes.viewer.repository.description.value);
-  print(queryRes.viewer.repository.id.value);
-  print(queryRes.viewer.repository.repoName.value);
+    print('=== . ===');
+    print(queryRes.viewer.login.value);
+    print(queryRes.viewer.bio.value);
+    print(queryRes.viewer.bio2.value);
 
-  print('=== .gist ===');
-  print(queryRes.viewer.gist.description.value);
+    print('=== .repository ===');
+    print(queryRes.viewer.repository.createdAt.value);
+    print(queryRes.viewer.repository.description.value);
+    print(queryRes.viewer.repository.id.value);
+    print(queryRes.viewer.repository.repoName.value);
 
-  print('=== .repositories ===');
-  queryRes.viewer.repositories.nodes.forEach((n) {
-    print(n.repoName.value);
-  });
-  print('=================== END TEST ===================\n\n');
+    print('=== .gist ===');
+    print(queryRes.viewer.gist.description.value);
 
-  AddTestCommentMutation mutationRes = await graphQLClient.execute(
-    mutation,
-    variables: {'issueId': 'MDU6SXNzdWUyNDQzNjk1NTI', 'body': 'Test issue 2'},
-    headers: {
-      'Authorization': 'bearer $apiToken',
-    },
-  );
+    print('=== .repositories ===');
+    queryRes.viewer.repositories.nodes.forEach((n) {
+      print(n.repoName.value);
+    });
+  } on GQLException catch (e) {
+    print(e.message);
+    print(e.gqlError);
+  } finally {
+    print('=================== END TEST 1 ===================\n\n');
+  }
 
-  print('\n\n===================== TEST =====================');
-  print(mutationRes.addComment.commentEdge.node.body.value);
-  print('=================== END TEST ===================\n\n');
+  try {
+    print('\n\n===================== TEST 2 =====================');
+
+    AddTestCommentMutation mutationRes = await graphQLClient.execute(
+      mutation,
+      variables: {'issueId': 'MDU6SXNzdWUyNDQzNjk1NTI', 'body': 'Test issue '},
+      headers: {
+        'Authorization': 'bearer $apiToken',
+      },
+    );
+
+    print('=== .body ===');
+    print(mutationRes.addComment.commentEdge.node.body.value);
+  } on GQLException catch (e) {
+    print(e.message);
+    print(e.gqlError);
+  } finally {
+    print('=================== END TEST 2 ===================\n\n');
+  }
+
+  try {
+    print('\n\n===================== TEST 3 =====================');
+
+    await graphQLClient.execute(
+      mutation,
+      variables: {'issueId': 'efwef', 'body': 'Test issue'},
+      headers: {
+        'Authorization': 'bearer $apiToken',
+      },
+    );
+  } on GQLException catch (e) {
+    print(e.message);
+    print(e.gqlError);
+    print(e.gqlError.first);
+  } finally {
+    print('=================== END TEST 3 ===================\n\n');
+  }
 }

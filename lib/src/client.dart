@@ -33,7 +33,7 @@ class GraphQLClient {
       };
 
       logMessage(logger, Level.INFO,
-          'Posting GQL request to $endPoint with operation ${operation.name}');
+          'Posting GQL query to $endPoint with operation ${operation.name}');
       logMessage(logger, Level.FINE, 'with body GQL request to $requestBody');
 
       var res = await _client.post(
@@ -42,7 +42,7 @@ class GraphQLClient {
         body: JSON.encode(requestBody),
       );
 
-      var data = JSON.decode(res.body)['data'];
+      var data = _parseResponse(res.body);
 
       logMessage(logger, Level.INFO, 'Receive response');
       logMessage(logger, Level.FINE, 'with body $data');
@@ -52,14 +52,21 @@ class GraphQLClient {
       logMessage(logger, Level.INFO, 'GQL query resolved');
 
       return operation;
-    } on EncoderError catch (_) {
+    } on EncoderError {
       logMessage(logger, Level.SHOUT, 'Error when encoding GQL query');
       rethrow;
-    } on ResolverError catch (_) {
-      logMessage(logger, Level.SHOUT, 'Error when resolving GQL query');
-      rethrow;
-    } on ClientException catch (_) {
+    } on ClientException {
       logMessage(logger, Level.SHOUT, 'Error during the HTTP request');
+      rethrow;
+    } on DecoderError {
+      logMessage(logger, Level.SHOUT, 'Error when decoding GQL response');
+      rethrow;
+    } on GQLException {
+      logMessage(
+          logger, Level.INFO, 'Error returned by the server in the query');
+      rethrow;
+    } on ResolverError {
+      logMessage(logger, Level.SHOUT, 'Error when resolving GQL response');
       rethrow;
     } catch (e) {
       logMessage(logger, Level.SHOUT, 'Unknow error');
@@ -75,6 +82,23 @@ class GraphQLClient {
     return execute(operation, headers: headers, variables: variables);
   }
 
+  Map _parseResponse(String body) {
+    try {
+      var jsonResponse = JSON.decode(body);
+      if (jsonResponse['errors'] != null) {
+        throw new GQLException('Error returned by the server in the query',
+            jsonResponse['errors']);
+      }
+
+      return jsonResponse['data'];
+    } on GQLException {
+      rethrow;
+    } catch (e) {
+      throw new DecoderError(
+          'Error when decoding the GQL response: ${e.toString()}');
+    }
+  }
+
   void _resolveQuery(GQLOperation operation, Map data) {
     try {
       operation.resolvers.forEach((GQLOperation r) => _resolve(r, data));
@@ -82,7 +106,7 @@ class GraphQLClient {
           f.resolvers.forEach((GQLOperation o) => _resolve(o, data)));
     } catch (e) {
       throw new ResolverError(
-          'Error when resolving the GQL query: ${e.toString()}');
+          'Error when resolving the GQL response: ${e.toString()}');
     }
   }
 

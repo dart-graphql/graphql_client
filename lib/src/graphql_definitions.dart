@@ -6,7 +6,7 @@ library graphql_client.definitions;
 
 import 'utils.dart';
 
-part 'graphql_perations.dart';
+part 'graphql_operations.dart';
 part 'graphql_alias.dart';
 part 'graphql_arguments.dart';
 part 'graphql_scalars.dart';
