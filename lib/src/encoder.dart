@@ -24,21 +24,30 @@ class GraphQLEncoder extends Converter<GQLOperation, String> {
     return gql;
   }
 
-  List<GQLField> _extractResolvers(GQLField operation) {
-    return operation.fields;
+  List<GQLField> _extractFields(GQLField operation) {
+    if (operation is Fields) {
+      return operation.fields;
+    }
+
+    return const [];
   }
 
   List<GQLFragment> _extractFragments(GQLField operation) {
-    return operation.fragments;
+    if (operation is Fragments) {
+      return operation.fragments;
+    }
+    return const [];
   }
 
   List<GQLFragment> _extractNestedFragments(GQLField operation) {
-    var fragments = operation.fields
+    var fragments = _extractFields(operation)
         .map(_extractNestedFragments)
         .expand((List<GQLFragment> f) => f)
         .toList();
 
-    fragments.addAll(operation.fragments);
+    if (operation is Fragments) {
+      fragments.addAll(operation.fragments);
+    }
 
     return fragments;
   }
@@ -58,7 +67,7 @@ class GraphQLEncoder extends Converter<GQLOperation, String> {
   }
 
   String _encodeOperationResolvers(GQLField operation) {
-    return _extractResolvers(operation).map(_encodeResolver).join(' ');
+    return _extractFields(operation).map(_encodeResolver).join(' ');
   }
 
   String _encodeOperationInlineFragments(GQLField operation) {

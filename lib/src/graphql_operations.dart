@@ -8,9 +8,6 @@ enum OperationType { query, mutation, subscription }
 
 abstract class GQLField {
   String get name;
-  List<GQLField> get fields;
-  List<GQLFragment> get fragments;
-
   GQLField clone();
 }
 

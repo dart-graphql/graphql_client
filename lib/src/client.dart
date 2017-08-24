@@ -101,12 +101,25 @@ class GraphQLClient {
 
   void _resolveQuery(GQLField operation, Map data) {
     try {
-      operation.fields.forEach((GQLField r) => _resolve(r, data));
-      operation.fragments.forEach((GQLFragment f) =>
-          f.fields.forEach((GQLField o) => _resolve(o, data)));
+      _resolveFields(operation, data);
+      _resolveFragments(operation, data);
     } catch (e) {
       throw new ResolverError(
           'Error when resolving the GQL response: ${e.toString()}');
+    }
+  }
+
+  void _resolveFields(GQLField operation, Map data) {
+    if (operation is Fields) {
+      operation.fields.forEach((GQLField r) => _resolve(r, data));
+    }
+  }
+
+  void _resolveFragments(GQLField operation, Map data) {
+    if (operation is Fragments) {
+      operation.fragments.forEach((GQLFragment fragment) {
+        _resolveFields(fragment, data);
+      });
     }
   }
 
@@ -119,8 +132,8 @@ class GraphQLClient {
       var nodeResolver = resolver.nodesResolver;
       List nodesData = data[key]['nodes'];
 
-      resolver.nodes = new List.generate(
-          nodesData.length, (_) => nodeResolver.clone());
+      resolver.nodes =
+          new List.generate(nodesData.length, (_) => nodeResolver.clone());
 
       for (int i = 0; i < nodesData.length; i++) {
         _resolveQuery(resolver.nodes[i], nodesData[i]);
