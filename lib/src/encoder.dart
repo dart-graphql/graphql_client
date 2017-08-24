@@ -24,18 +24,18 @@ class GraphQLEncoder extends Converter<GQLOperation, String> {
     return gql;
   }
 
-  List<GQLOperation> _extractResolvers(GQLOperation operation) {
-    return operation.resolvers;
+  List<GQLField> _extractResolvers(GQLField operation) {
+    return operation.fields;
   }
 
-  List<GQLOperation> _extractFragments(GQLOperation operation) {
+  List<GQLFragment> _extractFragments(GQLField operation) {
     return operation.fragments;
   }
 
-  List<Fragment> _extractNestedFragments(GQLOperation operation) {
-    var fragments = operation.resolvers
+  List<GQLFragment> _extractNestedFragments(GQLField operation) {
+    var fragments = operation.fields
         .map(_extractNestedFragments)
-        .expand((List<Fragment> f) => f)
+        .expand((List<GQLFragment> f) => f)
         .toList();
 
     fragments.addAll(operation.fragments);
@@ -43,39 +43,40 @@ class GraphQLEncoder extends Converter<GQLOperation, String> {
     return fragments;
   }
 
-  String _encodeOperationResolvers(GQLOperation operation) {
-    return _extractResolvers(operation).map(_encodeResolver).join(' ');
-  }
-
-  String _encodeOperationInlineFragments(GQLOperation operation) {
-    return _extractFragments(operation).map(_encodeInlineFragment).join(' ');
-  }
-
-  String _encodeNestedOperationFragments(GQLOperation operation) {
-    return _extractNestedFragments(operation).map(_encodeFragment).join('\n');
-  }
-
   String _encodeOperation(GQLOperation operation) {
+    GQLField field = operation;
     var rootResolver = _encodeOperationResolvers(operation);
     var operationType =
         operation.type == OperationType.mutation ? 'mutation' : 'query';
     var args = '';
 
-    if (operation is Arguments) {
-      args = '(${operation.args})';
+    if (field is Arguments) {
+      args = '(${field.args})';
     }
 
     return '$operationType ${operation.name} $args { $rootResolver }';
   }
 
-  String _encodeFragment(Fragment fragment) {
+  String _encodeOperationResolvers(GQLField operation) {
+    return _extractResolvers(operation).map(_encodeResolver).join(' ');
+  }
+
+  String _encodeOperationInlineFragments(GQLField operation) {
+    return _extractFragments(operation).map(_encodeInlineFragment).join(' ');
+  }
+
+  String _encodeNestedOperationFragments(GQLField operation) {
+    return _extractNestedFragments(operation).map(_encodeFragment).join('\n');
+  }
+
+  String _encodeFragment(GQLFragment fragment) {
     var rootResolver = _encodeOperationResolvers(fragment);
     var fragmentsGQL = _encodeNestedOperationFragments(fragment);
 
     return 'fragment ${fragment.name} on ${fragment.onType} { $rootResolver }${fragmentsGQL.isNotEmpty ? fragmentsGQL : ''}';
   }
 
-  String _encodeResolver(GQLOperation operation) {
+  String _encodeResolver(GQLField operation) {
     var gql = '';
     var childrenGQL = _encodeOperationResolvers(operation);
     var childrenFragment = _encodeOperationInlineFragments(operation);
@@ -97,7 +98,7 @@ class GraphQLEncoder extends Converter<GQLOperation, String> {
     return gql;
   }
 
-  String _encodeInlineFragment(Fragment fragment) {
+  String _encodeInlineFragment(GQLFragment fragment) {
     return '...${fragment.name}';
   }
 }

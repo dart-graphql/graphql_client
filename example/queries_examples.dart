@@ -29,21 +29,18 @@ class AddTestCommentMutation extends Object
   String get args => '\$issueId: ID!, \$body: String!';
 
   @override
-  List<GQLOperation> get resolvers => [addComment];
+  List<GQLField> get fields => [addComment];
 
   @override
-  List<Fragment> get fragments => const [];
+  List<GQLFragment> get fragments => const [];
 
   @override
-  AddTestCommentMutation selfFactory() =>
-      new AddTestCommentMutation()..addComment = addComment.selfFactory();
+  AddTestCommentMutation clone() =>
+      new AddTestCommentMutation()..addComment = addComment.clone();
 }
 
-class AddCommentMutation extends Object with Arguments implements GQLOperation {
+class AddCommentMutation extends Object with Arguments implements GQLField {
   CommentEdgeResolver commentEdge = new CommentEdgeResolver();
-
-  @override
-  OperationType get type => OperationType.query;
 
   @override
   String get name => 'addComment';
@@ -52,75 +49,66 @@ class AddCommentMutation extends Object with Arguments implements GQLOperation {
   String get args => 'input: {subjectId: \$issueId, body: \$body}';
 
   @override
-  List<GQLOperation> get resolvers => [commentEdge];
+  List<GQLField> get fields => [commentEdge];
 
   @override
-  List<Fragment> get fragments => const [];
+  List<GQLFragment> get fragments => const [];
 
   @override
-  AddCommentMutation selfFactory() =>
-      new AddCommentMutation()..commentEdge = commentEdge.selfFactory();
+  AddCommentMutation clone() =>
+      new AddCommentMutation()..commentEdge = commentEdge.clone();
 }
 
-class CommentEdgeResolver extends Object with Alias implements GQLOperation {
+class CommentEdgeResolver extends Object with Alias implements GQLField {
   NodeResolver node = new NodeResolver();
-
-  @override
-  OperationType get type => OperationType.query;
 
   @override
   String get name => 'commentEdge';
 
   @override
-  List<GQLOperation> get resolvers => [node];
+  List<GQLField> get fields => [node];
 
   @override
-  List<Fragment> get fragments => const [];
+  List<GQLFragment> get fragments => const [];
 
   @override
-  CommentEdgeResolver selfFactory() => new CommentEdgeResolver()
+  CommentEdgeResolver clone() => new CommentEdgeResolver()
     ..aliasSeed = aliasSeed
-    ..node = node.selfFactory();
+    ..node = node.clone();
 }
 
-class NodeResolver extends Object with Alias implements GQLOperation {
+class NodeResolver extends Object with Alias implements GQLField {
   BodyResolver body = new BodyResolver();
-
-  @override
-  OperationType get type => OperationType.query;
 
   @override
   String get name => 'node';
 
   @override
-  List<GQLOperation> get resolvers => [body];
+  List<GQLField> get fields => [body];
 
   @override
-  List<Fragment> get fragments => const [];
+  List<GQLFragment> get fragments => const [];
 
   @override
-  NodeResolver selfFactory() => new NodeResolver()
+  NodeResolver clone() => new NodeResolver()
     ..aliasSeed = aliasSeed
-    ..body = body.selfFactory();
+    ..body = body.clone();
 }
 
 class BodyResolver extends Object
     with Scalar<String>, Alias
-    implements GQLOperation {
-  @override
-  OperationType get type => OperationType.query;
-
+    implements GQLField {
   @override
   String get name => 'body';
 
   @override
-  List<GQLOperation> get resolvers => const [];
+  List<GQLField> get fields => const [];
 
   @override
-  List<Fragment> get fragments => const [];
+  List<GQLFragment> get fragments => const [];
 
   @override
-  BodyResolver selfFactory() => new BodyResolver()..aliasSeed = aliasSeed;
+  BodyResolver clone() => new BodyResolver()..aliasSeed = aliasSeed;
 }
 
 class LoginQuery implements GQLOperation {
@@ -133,16 +121,16 @@ class LoginQuery implements GQLOperation {
   String get name => 'LoginQuery';
 
   @override
-  List<GQLOperation> get resolvers => [viewer];
+  List<GQLField> get fields => [viewer];
 
   @override
-  List<Fragment> get fragments => const [];
+  List<GQLFragment> get fragments => const [];
 
   @override
-  LoginQuery selfFactory() => new LoginQuery()..viewer = viewer.selfFactory();
+  LoginQuery clone() => new LoginQuery()..viewer = viewer.clone();
 }
 
-class ViewerResolver extends Object with Alias implements GQLOperation {
+class ViewerResolver extends Object with Alias implements GQLField {
   GistResolver gist = new GistResolver();
   RepositoryResolver repository = new RepositoryResolver();
   RepositoriesResolver repositories = new RepositoriesResolver();
@@ -152,37 +140,31 @@ class ViewerResolver extends Object with Alias implements GQLOperation {
   BioResolver bio2 = new BioResolver();
 
   @override
-  OperationType get type => OperationType.query;
-
-  @override
   String get name => 'viewer';
 
   @override
-  List<GQLOperation> get resolvers =>
+  List<GQLField> get fields =>
       [repositories, gist, repository, login, bio, bio2];
 
   @override
-  List<Fragment> get fragments => const [];
+  List<GQLFragment> get fragments => const [];
 
   @override
-  ViewerResolver selfFactory() => new ViewerResolver()
+  ViewerResolver clone() => new ViewerResolver()
     ..aliasSeed = aliasSeed
-    ..gist = gist.selfFactory()
-    ..repository = repository.selfFactory()
-    ..repositories = repositories.selfFactory()
-    ..login = login.selfFactory()
-    ..bio = bio.selfFactory()
-    ..bio2 = bio2.selfFactory();
+    ..gist = gist.clone()
+    ..repository = repository.clone()
+    ..repositories = repositories.clone()
+    ..login = login.clone()
+    ..bio = bio.clone()
+    ..bio2 = bio2.clone();
 }
 
 class RepositoriesResolver extends Object
     with Arguments, Alias, ScalarCollection<NodesResolver>
-    implements GQLOperation {
+    implements GQLField {
   @override
   NodesResolver nodesResolver = new NodesResolver();
-
-  @override
-  OperationType get type => OperationType.query;
 
   @override
   String get name => 'repositories';
@@ -191,35 +173,31 @@ class RepositoriesResolver extends Object
   String get args => 'first: 5';
 
   @override
-  List<GQLOperation> get resolvers => [nodesResolver];
+  List<GQLField> get fields => [nodesResolver];
 
   @override
-  List<Fragment> get fragments => const [];
+  List<GQLFragment> get fragments => const [];
 
   @override
-  RepositoriesResolver selfFactory() => new RepositoriesResolver()
+  RepositoriesResolver clone() => new RepositoriesResolver()
     ..aliasSeed = aliasSeed
-    ..nodesResolver = nodesResolver.selfFactory();
+    ..nodesResolver = nodesResolver.clone();
 }
 
-class NodesResolver extends Object implements GQLOperation {
+class NodesResolver extends Object implements GQLField {
   NameResolver repoName = new NameResolver();
-
-  @override
-  OperationType get type => OperationType.query;
 
   @override
   String get name => 'nodes';
 
   @override
-  List<GQLOperation> get resolvers => [repoName];
+  List<GQLField> get fields => [repoName];
 
   @override
-  List<Fragment> get fragments => const [];
+  List<GQLFragment> get fragments => const [];
 
   @override
-  NodesResolver selfFactory() =>
-      new NodesResolver()..repoName = repoName.selfFactory();
+  NodesResolver clone() => new NodesResolver()..repoName = repoName.clone();
 }
 
 class RepositoryResolver extends Object
@@ -227,10 +205,10 @@ class RepositoryResolver extends Object
     implements
         RepositoryDescriptiveFragmentResolver,
         RepositoryIdFragmentResolver,
-        GQLOperation {
-  final RepositoryDescriptiveFragment descriptiveRepositoryFragment =
+        GQLField {
+  final RepositoryDescriptiveFragment _descriptiveRepositoryFragment =
       new RepositoryDescriptiveFragment();
-  final RepositoryIdFragment idRepositoryFragment = new RepositoryIdFragment();
+  final RepositoryIdFragment _idRepositoryFragment = new RepositoryIdFragment();
 
   CreatedAtResolver createdAt = new CreatedAtResolver();
 
@@ -244,13 +222,10 @@ class RepositoryResolver extends Object
   IdResolver id;
 
   RepositoryResolver() {
-    description = descriptiveRepositoryFragment.description;
-    repoName = descriptiveRepositoryFragment.repoName;
-    id = idRepositoryFragment.id;
+    description = _descriptiveRepositoryFragment.description;
+    repoName = _descriptiveRepositoryFragment.repoName;
+    id = _idRepositoryFragment.id;
   }
-
-  @override
-  OperationType get type => OperationType.query;
 
   @override
   String get name => 'repository';
@@ -259,35 +234,32 @@ class RepositoryResolver extends Object
   String get args => 'name: "graphql_client"';
 
   @override
-  List<GQLOperation> get resolvers => [createdAt];
+  List<GQLField> get fields => [createdAt];
 
   @override
-  List<Fragment> get fragments =>
-      [descriptiveRepositoryFragment, idRepositoryFragment];
+  List<GQLFragment> get fragments =>
+      [_descriptiveRepositoryFragment, _idRepositoryFragment];
 
-  RepositoryResolver selfFactory() => new RepositoryResolver()
+  RepositoryResolver clone() => new RepositoryResolver()
     ..aliasSeed = aliasSeed
     ..description = description
     ..repoName = repoName
     ..id = id
-    ..createdAt = createdAt.selfFactory();
+    ..createdAt = createdAt.clone();
 }
 
 class GistResolver extends Object
     with Arguments, Alias
-    implements GistDescriptiveFragmentResolver, GQLOperation {
-  final GistDescriptiveFragment descriptiveGistFragment =
+    implements GistDescriptiveFragmentResolver, GQLField {
+  final GistDescriptiveFragment _descriptiveGistFragment =
       new GistDescriptiveFragment();
 
   @override
   DescriptionResolver description;
 
   GistResolver() {
-    description = descriptiveGistFragment.description;
+    description = _descriptiveGistFragment.description;
   }
-
-  @override
-  OperationType get type => OperationType.query;
 
   @override
   String get name => 'gist';
@@ -296,210 +268,180 @@ class GistResolver extends Object
   String get args => 'name: "e675723fc16a5b9bd4d1"';
 
   @override
-  List<GQLOperation> get resolvers => [];
+  List<GQLField> get fields => [];
 
   @override
-  List<Fragment> get fragments => [descriptiveGistFragment];
+  List<GQLFragment> get fragments => [_descriptiveGistFragment];
 
   @override
-  GistResolver selfFactory() => new GistResolver()
+  GistResolver clone() => new GistResolver()
     ..aliasSeed = aliasSeed
     ..description = description;
 }
 
 class LoginResolver extends Object
     with Scalar<String>, Alias
-    implements GQLOperation {
-  @override
-  OperationType get type => OperationType.query;
-
+    implements GQLField {
   @override
   String get name => 'login';
 
   @override
-  List<GQLOperation> get resolvers => const [];
+  List<GQLField> get fields => const [];
 
   @override
-  List<Fragment> get fragments => const [];
+  List<GQLFragment> get fragments => const [];
 
   @override
-  LoginResolver selfFactory() => new LoginResolver()..aliasSeed = aliasSeed;
+  LoginResolver clone() => new LoginResolver()..aliasSeed = aliasSeed;
 }
 
 class BioResolver extends Object
     with Scalar<String>, Alias
-    implements GQLOperation {
-  @override
-  OperationType get type => OperationType.query;
-
+    implements GQLField {
   @override
   String get name => 'bio';
 
   @override
-  List<GQLOperation> get resolvers => const [];
+  List<GQLField> get fields => const [];
 
   @override
-  List<Fragment> get fragments => const [];
+  List<GQLFragment> get fragments => const [];
 
   @override
-  BioResolver selfFactory() => new BioResolver()..aliasSeed = aliasSeed;
+  BioResolver clone() => new BioResolver()..aliasSeed = aliasSeed;
 }
 
 class DescriptionResolver extends Object
     with Scalar<String>, Alias
-    implements GQLOperation {
-  @override
-  OperationType get type => OperationType.query;
-
+    implements GQLField {
   @override
   String get name => 'description';
 
   @override
-  List<GQLOperation> get resolvers => const [];
+  List<GQLField> get fields => const [];
 
   @override
-  List<Fragment> get fragments => const [];
+  List<GQLFragment> get fragments => const [];
 
   @override
-  DescriptionResolver selfFactory() =>
+  DescriptionResolver clone() =>
       new DescriptionResolver()..aliasSeed = aliasSeed;
 }
 
 class NameResolver extends Object
     with Scalar<String>, Alias
-    implements GQLOperation {
-  @override
-  OperationType get type => OperationType.query;
-
+    implements GQLField {
   @override
   String get name => 'name';
 
   @override
-  List<GQLOperation> get resolvers => const [];
+  List<GQLField> get fields => const [];
 
   @override
-  List<Fragment> get fragments => const [];
+  List<GQLFragment> get fragments => const [];
 
   @override
-  NameResolver selfFactory() => new NameResolver()..aliasSeed = aliasSeed;
+  NameResolver clone() => new NameResolver()..aliasSeed = aliasSeed;
 }
 
 class CreatedAtResolver extends Object
     with Scalar<String>, Alias
-    implements GQLOperation {
-  @override
-  OperationType get type => OperationType.query;
-
+    implements GQLField {
   @override
   String get name => 'createdAt';
 
   @override
-  List<GQLOperation> get resolvers => const [];
+  List<GQLField> get fields => const [];
 
   @override
-  List<Fragment> get fragments => const [];
+  List<GQLFragment> get fragments => const [];
 
   @override
-  CreatedAtResolver selfFactory() =>
-      new CreatedAtResolver()..aliasSeed = aliasSeed;
+  CreatedAtResolver clone() => new CreatedAtResolver()..aliasSeed = aliasSeed;
 }
 
-class IdResolver extends Object
-    with Scalar<String>, Alias
-    implements GQLOperation {
-  @override
-  OperationType get type => OperationType.query;
-
+class IdResolver extends Object with Scalar<String>, Alias implements GQLField {
   @override
   String get name => 'id';
 
   @override
-  List<GQLOperation> get resolvers => const [];
+  List<GQLField> get fields => const [];
 
   @override
-  List<Fragment> get fragments => const [];
+  List<GQLFragment> get fragments => const [];
 
   @override
-  IdResolver selfFactory() => new IdResolver()..aliasSeed = aliasSeed;
+  IdResolver clone() => new IdResolver()..aliasSeed = aliasSeed;
 }
 
-class GistDescriptiveFragmentResolver implements GQLOperation {
+class GistDescriptiveFragmentResolver implements GQLField {
   DescriptionResolver description = new DescriptionResolver();
-
-  @override
-  OperationType get type => OperationType.query;
 
   @override
   String get name => 'GistDescriptiveFragment';
 
   @override
-  List<GQLOperation> get resolvers => [description];
+  List<GQLField> get fields => [description];
 
   @override
-  List<Fragment> get fragments => const [];
+  List<GQLFragment> get fragments => const [];
 
   @override
-  GistDescriptiveFragmentResolver selfFactory() =>
+  GistDescriptiveFragmentResolver clone() =>
       new GistDescriptiveFragmentResolver()..description = description;
 }
 
 class GistDescriptiveFragment extends GistDescriptiveFragmentResolver
-    implements Fragment {
+    implements GQLFragment {
   @override
   String get onType => 'Gist';
 }
 
-class RepositoryDescriptiveFragmentResolver implements GQLOperation {
+class RepositoryDescriptiveFragmentResolver implements GQLField {
   DescriptionResolver description = new DescriptionResolver();
   NameResolver repoName = new NameResolver();
-
-  @override
-  OperationType get type => OperationType.query;
 
   @override
   String get name => 'RepositoryDescriptiveFragment';
 
   @override
-  List<GQLOperation> get resolvers => [description, repoName];
+  List<GQLField> get fields => [description, repoName];
 
   @override
-  List<Fragment> get fragments => const [];
+  List<GQLFragment> get fragments => const [];
 
   @override
-  RepositoryDescriptiveFragmentResolver selfFactory() =>
+  RepositoryDescriptiveFragmentResolver clone() =>
       new RepositoryDescriptiveFragmentResolver()
         ..description = description
         ..repoName = repoName;
 }
 
 class RepositoryDescriptiveFragment
-    extends RepositoryDescriptiveFragmentResolver implements Fragment {
+    extends RepositoryDescriptiveFragmentResolver implements GQLFragment {
   @override
   String get onType => 'Repository';
 }
 
-class RepositoryIdFragmentResolver implements GQLOperation {
+class RepositoryIdFragmentResolver implements GQLField {
   IdResolver id = new IdResolver();
-
-  @override
-  OperationType get type => OperationType.query;
 
   @override
   String get name => 'RepositoryIdFragment';
 
   @override
-  List<GQLOperation> get resolvers => [id];
+  List<GQLField> get fields => [id];
 
   @override
-  List<Fragment> get fragments => const [];
+  List<GQLFragment> get fragments => const [];
 
   @override
-  RepositoryIdFragmentResolver selfFactory() =>
+  RepositoryIdFragmentResolver clone() =>
       new RepositoryIdFragmentResolver()..id = id;
 }
 
 class RepositoryIdFragment extends RepositoryIdFragmentResolver
-    implements Fragment {
+    implements GQLFragment {
   @override
   String get onType => 'Repository';
 }

@@ -10,10 +10,10 @@ import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:logging/logging.dart';
 
-import 'converter.dart';
 import 'graphql_definitions.dart';
-import 'utils.dart';
+import 'converter.dart';
 import 'errors.dart';
+import 'utils.dart';
 
 class GraphQLClient {
   final Client _client;
@@ -68,7 +68,7 @@ class GraphQLClient {
     } on ResolverError {
       logMessage(logger, Level.SHOUT, 'Error when resolving GQL response');
       rethrow;
-    } catch (e) {
+    } catch (_) {
       logMessage(logger, Level.SHOUT, 'Unknow error');
       rethrow;
     }
@@ -99,18 +99,18 @@ class GraphQLClient {
     }
   }
 
-  void _resolveQuery(GQLOperation operation, Map data) {
+  void _resolveQuery(GQLField operation, Map data) {
     try {
-      operation.resolvers.forEach((GQLOperation r) => _resolve(r, data));
-      operation.fragments.forEach((Fragment f) =>
-          f.resolvers.forEach((GQLOperation o) => _resolve(o, data)));
+      operation.fields.forEach((GQLField r) => _resolve(r, data));
+      operation.fragments.forEach((GQLFragment f) =>
+          f.fields.forEach((GQLField o) => _resolve(o, data)));
     } catch (e) {
       throw new ResolverError(
           'Error when resolving the GQL response: ${e.toString()}');
     }
   }
 
-  void _resolve(GQLOperation resolver, Map data) {
+  void _resolve(GQLField resolver, Map data) {
     var key = (resolver is Alias) ? resolver.alias : resolver.name;
 
     if (resolver is Scalar) {
@@ -120,7 +120,7 @@ class GraphQLClient {
       List nodesData = data[key]['nodes'];
 
       resolver.nodes = new List.generate(
-          nodesData.length, (_) => nodeResolver.selfFactory());
+          nodesData.length, (_) => nodeResolver.clone());
 
       for (int i = 0; i < nodesData.length; i++) {
         _resolveQuery(resolver.nodes[i], nodesData[i]);

@@ -4,7 +4,7 @@
 
 part of graphql_client.definitions;
 
-abstract class Alias implements GQLOperation {
+abstract class Alias implements GQLField {
   int aliasSeed = getRandomInt();
 
   String get alias => '${name}_${aliasSeed}';

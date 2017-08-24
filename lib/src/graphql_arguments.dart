@@ -4,6 +4,6 @@
 
 part of graphql_client.definitions;
 
-abstract class Arguments implements GQLOperation {
+abstract class Arguments implements GQLField {
   String get args;
 }

@@ -4,7 +4,7 @@
 
 part of graphql_client.definitions;
 
-abstract class Scalar<T> implements GQLOperation {
+abstract class Scalar<T> implements GQLField {
   T _value;
 
   T get value {
@@ -18,11 +18,10 @@ abstract class Scalar<T> implements GQLOperation {
   set value(T v) => _value = v;
 }
 
-abstract class ScalarCollection<T extends GQLOperation>
-    implements GQLOperation {
+abstract class ScalarCollection<T extends GQLField> implements GQLField {
   List<T> _nodes;
 
-  GQLOperation get nodesResolver;
+  GQLField get nodesResolver;
 
   List<T> get nodes {
     if (_nodes == null) {

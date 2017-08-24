@@ -4,17 +4,20 @@
 
 part of graphql_client.definitions;
 
-enum OperationType { query, mutation }
+enum OperationType { query, mutation, subscription }
 
-abstract class GQLOperation {
+abstract class GQLField {
   String get name;
-  OperationType get type;
-  List<GQLOperation> get resolvers;
-  List<Fragment> get fragments;
+  List<GQLField> get fields;
+  List<GQLFragment> get fragments;
 
-  GQLOperation selfFactory();
+  GQLField clone();
 }
 
-abstract class Fragment extends GQLOperation {
+abstract class GQLOperation extends GQLField {
+  OperationType get type;
+}
+
+abstract class GQLFragment extends GQLField {
   String get onType;
 }
