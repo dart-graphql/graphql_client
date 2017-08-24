@@ -116,7 +116,7 @@ class CommentEdgeResolver extends Object
 
   @override
   CommentEdgeResolver clone() => new CommentEdgeResolver()
-    ..aliasSeed = aliasSeed
+    ..aliasId = alias
     ..node = node.clone();
 }
 
@@ -131,7 +131,7 @@ class NodeResolver extends Object with Alias, Fields implements GQLField {
 
   @override
   NodeResolver clone() => new NodeResolver()
-    ..aliasSeed = aliasSeed
+    ..aliasId = alias
     ..body = body.clone();
 }
 
@@ -152,7 +152,7 @@ class ViewerResolver extends Object with Alias, Fields implements GQLField {
 
   @override
   ViewerResolver clone() => new ViewerResolver()
-    ..aliasSeed = aliasSeed
+    ..aliasId = alias
     ..gist = gist.clone()
     ..repository = repository.clone()
     ..repositories = repositories.clone()
@@ -215,7 +215,7 @@ class RepositoryResolver extends Object
       [_descriptiveRepositoryFragment, _idRepositoryFragment];
 
   RepositoryResolver clone() => new RepositoryResolver()
-    ..aliasSeed = aliasSeed
+    ..aliasId = alias
     ..description = description.clone()
     ..repoName = repoName.clone()
     ..id = id.clone()
@@ -246,7 +246,7 @@ class GistResolver extends Object
 
   @override
   GistResolver clone() => new GistResolver()
-    ..aliasSeed = aliasSeed
+    ..aliasId = alias
     ..description = description.clone();
 }
 
@@ -334,7 +334,7 @@ class RepositoriesResolver extends Object
 
   @override
   RepositoriesResolver clone() => new RepositoriesResolver()
-    ..aliasSeed = aliasSeed
+    ..aliasId = alias
     ..nodesResolver = nodesResolver.clone();
 }
 
@@ -355,7 +355,7 @@ class LoginResolver extends Object
   String get name => 'login';
 
   @override
-  LoginResolver clone() => new LoginResolver()..aliasSeed = aliasSeed;
+  LoginResolver clone() => new LoginResolver()..aliasId = alias;
 }
 
 class BioResolver extends Object
@@ -365,7 +365,7 @@ class BioResolver extends Object
   String get name => 'bio';
 
   @override
-  BioResolver clone() => new BioResolver()..aliasSeed = aliasSeed;
+  BioResolver clone() => new BioResolver()..aliasId = alias;
 }
 
 class DescriptionResolver extends Object
@@ -375,8 +375,7 @@ class DescriptionResolver extends Object
   String get name => 'description';
 
   @override
-  DescriptionResolver clone() =>
-      new DescriptionResolver()..aliasSeed = aliasSeed;
+  DescriptionResolver clone() => new DescriptionResolver()..aliasId = alias;
 }
 
 class NameResolver extends Object
@@ -386,7 +385,7 @@ class NameResolver extends Object
   String get name => 'name';
 
   @override
-  NameResolver clone() => new NameResolver()..aliasSeed = aliasSeed;
+  NameResolver clone() => new NameResolver()..aliasId = alias;
 }
 
 class CreatedAtResolver extends Object
@@ -396,7 +395,7 @@ class CreatedAtResolver extends Object
   String get name => 'createdAt';
 
   @override
-  CreatedAtResolver clone() => new CreatedAtResolver()..aliasSeed = aliasSeed;
+  CreatedAtResolver clone() => new CreatedAtResolver()..aliasId = alias;
 }
 
 class IdResolver extends Object with Scalar<String>, Alias implements GQLField {
@@ -404,7 +403,7 @@ class IdResolver extends Object with Scalar<String>, Alias implements GQLField {
   String get name => 'id';
 
   @override
-  IdResolver clone() => new IdResolver()..aliasSeed = aliasSeed;
+  IdResolver clone() => new IdResolver()..aliasId = alias;
 }
 
 class BodyResolver extends Object
@@ -414,5 +413,5 @@ class BodyResolver extends Object
   String get name => 'body';
 
   @override
-  BodyResolver clone() => new BodyResolver()..aliasSeed = aliasSeed;
+  BodyResolver clone() => new BodyResolver()..aliasId = alias;
 }

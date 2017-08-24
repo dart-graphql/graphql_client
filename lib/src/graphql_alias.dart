@@ -5,7 +5,8 @@
 part of graphql_client.definitions;
 
 abstract class Alias implements GQLField {
-  int aliasSeed = getRandomInt();
+  int _aliasId = getRandomInt();
 
-  String get alias => '${name}_${aliasSeed}';
+  set aliasId(String alias) => _aliasId = int.parse(alias.split('_').last);
+  String get alias => '${name}_${_aliasId}';
 }
