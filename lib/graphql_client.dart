@@ -7,7 +7,7 @@
 /// More dartdocs go here.
 library graphql_client;
 
-export 'src/graphql.dart';
 export 'src/client.dart';
 export 'src/converter.dart';
-export 'src/errors.dart';
+export 'src/exceptions.dart';
+export 'src/graphql.dart';

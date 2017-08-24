@@ -4,6 +4,9 @@
 
 import 'package:graphql_client/graphql_client.dart';
 
+// ignore_for_file: public_member_api_docs
+// ignore_for_file: slash_for_doc_comments
+
 /**
  * ************************
  * ************************

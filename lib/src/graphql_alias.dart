@@ -8,5 +8,5 @@ abstract class Alias implements GQLField {
   int _aliasId = getRandomInt();
 
   set aliasId(String alias) => _aliasId = int.parse(alias.split('_').last);
-  String get alias => '${name}_${_aliasId}';
+  String get alias => '${name}_$_aliasId';
 }

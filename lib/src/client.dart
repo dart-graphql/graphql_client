@@ -10,9 +10,9 @@ import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:logging/logging.dart';
 
-import 'graphql.dart';
 import 'converter.dart';
-import 'errors.dart';
+import 'exceptions.dart';
+import 'graphql.dart';
 import 'utils.dart';
 
 class GraphQLClient {
@@ -26,7 +26,7 @@ class GraphQLClient {
   Future<T> execute<T extends GQLOperation>(T operation,
       {Map variables = const {}, Map headers}) async {
     try {
-      var requestBody = {
+      final requestBody = {
         'query': GRAPHQL.encode(operation),
         'variables': variables,
         'operationName': operation.name,
@@ -36,13 +36,13 @@ class GraphQLClient {
           'Posting GQL query to $endPoint with operation ${operation.name}');
       logMessage(logger, Level.FINE, 'with body GQL request to $requestBody');
 
-      var res = await _client.post(
+      final res = await _client.post(
         endPoint,
         headers: headers,
         body: JSON.encode(requestBody),
       );
 
-      var data = _parseResponse(res.body);
+      final data = _parseResponse(res.body);
 
       logMessage(logger, Level.INFO, 'Receive response');
       logMessage(logger, Level.FINE, 'with body $data');
@@ -52,24 +52,12 @@ class GraphQLClient {
       logMessage(logger, Level.INFO, 'GQL query resolved');
 
       return operation;
-    } on EncoderError {
-      logMessage(logger, Level.SHOUT, 'Error when encoding GQL query');
-      rethrow;
     } on ClientException {
-      logMessage(logger, Level.SHOUT, 'Error during the HTTP request');
-      rethrow;
-    } on DecoderError {
-      logMessage(logger, Level.SHOUT, 'Error when decoding GQL response');
+      logMessage(logger, Level.INFO, 'Error during the HTTP request');
       rethrow;
     } on GQLException {
       logMessage(
           logger, Level.INFO, 'Error returned by the server in the query');
-      rethrow;
-    } on ResolverError {
-      logMessage(logger, Level.SHOUT, 'Error when resolving GQL response');
-      rethrow;
-    } catch (_) {
-      logMessage(logger, Level.SHOUT, 'Unknow error');
       rethrow;
     }
   }
@@ -77,14 +65,14 @@ class GraphQLClient {
   Future<T> executeOperations<T extends GQLOperation>(
       Map<String, GQLOperation> operations, String operationName,
       {Map variables = const {}, Map headers}) async {
-    var operation = operations[operationName];
+    final operation = operations[operationName];
 
     return execute(operation, headers: headers, variables: variables);
   }
 
   Map _parseResponse(String body) {
     try {
-      var jsonResponse = JSON.decode(body);
+      final jsonResponse = JSON.decode(body);
       if (jsonResponse['errors'] != null) {
         throw new GQLException('Error returned by the server in the query',
             jsonResponse['errors']);
@@ -93,49 +81,43 @@ class GraphQLClient {
       return jsonResponse['data'];
     } on GQLException {
       rethrow;
-    } catch (e) {
-      throw new DecoderError(
-          'Error when decoding the GQL response: ${e.toString()}');
     }
   }
 
   void _resolveQuery(GQLField operation, Map data) {
-    try {
-      _resolveFields(operation, data);
-      _resolveFragments(operation, data);
-    } catch (e) {
-      throw new ResolverError(
-          'Error when resolving the GQL response: ${e.toString()}');
-    }
+    _resolveFields(operation, data);
+    _resolveFragments(operation, data);
   }
 
   void _resolveFields(GQLField operation, Map data) {
     if (operation is Fields) {
-      operation.fields.forEach((GQLField r) => _resolve(r, data));
+      for (var field in operation.fields) {
+        _resolve(field, data);
+      }
     }
   }
 
   void _resolveFragments(GQLField operation, Map data) {
     if (operation is Fragments) {
-      operation.fragments.forEach((GQLFragment fragment) {
+      for (var fragment in operation.fragments) {
         _resolveFields(fragment, data);
-      });
+      }
     }
   }
 
   void _resolve(GQLField resolver, Map data) {
-    var key = (resolver is Alias) ? resolver.alias : resolver.name;
+    final key = (resolver is Alias) ? resolver.alias : resolver.name;
 
     if (resolver is Scalar) {
       resolver.value = data[key];
     } else if (resolver is ScalarCollection) {
-      var nodeResolver = resolver.nodesResolver;
-      List nodesData = data[key]['nodes'];
+      final nodeResolver = resolver.nodesResolver;
+      final nodesData = data[key]['nodes'];
 
       resolver.nodes =
           new List.generate(nodesData.length, (_) => nodeResolver.clone());
 
-      for (int i = 0; i < nodesData.length; i++) {
+      for (var i = 0; i < nodesData.length; i++) {
         _resolveQuery(resolver.nodes[i], nodesData[i]);
       }
     } else {

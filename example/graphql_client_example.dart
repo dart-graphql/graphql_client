@@ -2,6 +2,7 @@
 // Use of this source code is governed by a MIT-style license
 // that can be found in the LICENSE file.
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:http/http.dart';
@@ -11,15 +12,17 @@ import 'package:graphql_client/graphql_client.dart';
 
 import 'queries_examples.dart';
 
-main() async {
+// ignore_for_file: public_member_api_docs
+
+Future main() async {
   Logger.root
     ..level = Level.ALL
-    ..onRecord.listen((LogRecord rec) {
+    ..onRecord.listen((rec) {
       print('${rec.level.name}: ${rec.time}: ${rec.message}');
     });
 
   const endPoint = 'https://api.github.com/graphql';
-  var apiToken = Platform.environment['GITHUBQL_TOKEN'];
+  final apiToken = Platform.environment['GITHUBQL_TOKEN'];
 
   final client = new Client();
   final logger = new Logger('GraphQLClient');
@@ -29,13 +32,13 @@ main() async {
     endPoint: endPoint,
   );
 
-  var query = new LoginQuery();
-  var mutation = new AddTestCommentMutation();
+  final query = new LoginQuery();
+  final mutation = new AddTestCommentMutation();
 
   try {
     print('\n\n===================== TEST 1 =====================');
 
-    LoginQuery queryRes = await graphQLClient.execute(
+    final queryRes = await graphQLClient.execute(
       query,
       variables: {'issueId': 'MDU6SXNzdWUyNDQzNjk1NTI', 'body': 'Test issue 2'},
       headers: {
@@ -58,9 +61,9 @@ main() async {
     print(queryRes.viewer.gist.description.value);
 
     print('=== .repositories ===');
-    queryRes.viewer.repositories.nodes.forEach((n) {
+    for (var n in queryRes.viewer.repositories.nodes) {
       print(n.repoName.value);
-    });
+    }
   } on GQLException catch (e) {
     print(e.message);
     print(e.gqlError);
@@ -71,7 +74,7 @@ main() async {
   try {
     print('\n\n===================== TEST 2 =====================');
 
-    AddTestCommentMutation mutationRes = await graphQLClient.execute(
+    final mutationRes = await graphQLClient.execute(
       mutation,
       variables: {'issueId': 'MDU6SXNzdWUyNDQzNjk1NTI', 'body': 'Test issue '},
       headers: {
