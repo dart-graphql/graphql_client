@@ -6,7 +6,7 @@ library graphql_client.converter;
 
 import 'dart:convert';
 
-import 'graphql_definitions.dart';
+import 'graphql.dart';
 import 'errors.dart';
 
 part 'encoder.dart';

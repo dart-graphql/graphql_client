@@ -8,10 +8,9 @@ import 'dart:math';
 
 import 'package:logging/logging.dart';
 
-var maxInt = 100;
 var rng = new Random();
 
-int getRandomInt([int max = 100]) => rng.nextInt(max);
+int getRandomInt([int max = 1000]) => rng.nextInt(max);
 
 void logMessage([Logger logger, Level logLevel, String message]) {
   if (logger != null) {

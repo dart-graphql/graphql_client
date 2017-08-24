@@ -10,7 +10,7 @@ import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:logging/logging.dart';
 
-import 'graphql_definitions.dart';
+import 'graphql.dart';
 import 'converter.dart';
 import 'errors.dart';
 import 'utils.dart';
