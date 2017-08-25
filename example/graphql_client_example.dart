@@ -25,9 +25,9 @@ Future main() async {
   final apiToken = Platform.environment['GITHUBQL_TOKEN'];
 
   final client = new Client();
-  final logger = new Logger('GraphQLClient');
-  final graphQLClient = new GraphQLClient(
-    client,
+  final logger = new Logger('GQLClient');
+  final graphQLClient = new GQLClient(
+    client: client,
     logger: logger,
     endPoint: endPoint,
   );
@@ -66,7 +66,7 @@ Future main() async {
     }
   } on GQLException catch (e) {
     print(e.message);
-    print(e.gqlError);
+    print(e.gqlErrors);
   } finally {
     print('=================== END TEST 1 ===================\n\n');
   }
@@ -86,7 +86,7 @@ Future main() async {
     print(mutationRes.addComment.commentEdge.node.body.value);
   } on GQLException catch (e) {
     print(e.message);
-    print(e.gqlError);
+    print(e.gqlErrors);
   } finally {
     print('=================== END TEST 2 ===================\n\n');
   }
@@ -103,8 +103,8 @@ Future main() async {
     );
   } on GQLException catch (e) {
     print(e.message);
-    print(e.gqlError);
-    print(e.gqlError.first);
+    print(e.gqlErrors);
+    print(e.gqlErrors.first);
   } finally {
     print('=================== END TEST 3 ===================\n\n');
   }

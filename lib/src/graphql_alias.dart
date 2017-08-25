@@ -6,9 +6,27 @@
 
 part of graphql_client.definitions;
 
+/// A GQL alias.
+///
+/// It could be applied as a mixin on a [GQLField].
+/// The alias has a unique random ID. It is used to avoid collision during query.
+///
+/// Eg.
+/// You want to query the name 2 times but with 2 different fonts. You could use
+/// whatever alias you want in you GQL query / dart query but the generated query
+/// will look like:
+/// ```
+/// query MyQuery {
+///   name_37: name(size: SMALL)
+///   name_87: name(font: BIG)
+/// }
+/// ```
 abstract class Alias implements GQLField {
-  int _aliasId = getRandomInt();
+  /// The unique random ID of the alias.
+  ///
+  /// We would prefer to make it private but it seems not possible.
+  int aliasId = getRandomInt();
 
-  set aliasId(String alias) => _aliasId = int.parse(alias.split('_').last);
-  String get alias => '${name}_$_aliasId';
+  /// The GQL alias.
+  String get alias => '${name}_$aliasId';
 }

@@ -77,6 +77,12 @@ class RepositoryIdFragment extends RepositoryIdFragmentResolver
   String get onType => 'Repository';
 }
 
+class GistDescriptiveFragment extends GistDescriptiveFragmentResolver
+    implements GQLFragment {
+  @override
+  String get onType => 'Gist';
+}
+
 /**
  * ************************
  * ************************
@@ -119,7 +125,7 @@ class CommentEdgeResolver extends Object
 
   @override
   CommentEdgeResolver clone() => new CommentEdgeResolver()
-    ..aliasId = alias
+    ..aliasId = aliasId
     ..node = node.clone();
 }
 
@@ -134,7 +140,7 @@ class NodeResolver extends Object with Alias, Fields implements GQLField {
 
   @override
   NodeResolver clone() => new NodeResolver()
-    ..aliasId = alias
+    ..aliasId = aliasId
     ..body = body.clone();
 }
 
@@ -155,7 +161,7 @@ class ViewerResolver extends Object with Alias, Fields implements GQLField {
 
   @override
   ViewerResolver clone() => new ViewerResolver()
-    ..aliasId = alias
+    ..aliasId = aliasId
     ..gist = gist.clone()
     ..repository = repository.clone()
     ..repositories = repositories.clone()
@@ -218,7 +224,7 @@ class RepositoryResolver extends Object
       [_descriptiveRepositoryFragment, _idRepositoryFragment];
 
   RepositoryResolver clone() => new RepositoryResolver()
-    ..aliasId = alias
+    ..aliasId = aliasId
     ..description = description.clone()
     ..repoName = repoName.clone()
     ..id = id.clone()
@@ -249,7 +255,7 @@ class GistResolver extends Object
 
   @override
   GistResolver clone() => new GistResolver()
-    ..aliasId = alias
+    ..aliasId = aliasId
     ..description = description.clone();
 }
 
@@ -267,12 +273,6 @@ class GistDescriptiveFragmentResolver extends Object
   @override
   GistDescriptiveFragmentResolver clone() =>
       new GistDescriptiveFragmentResolver()..description = description.clone();
-}
-
-class GistDescriptiveFragment extends GistDescriptiveFragmentResolver
-    implements GQLFragment {
-  @override
-  String get onType => 'Gist';
 }
 
 class RepositoryDescriptiveFragmentResolver extends Object
@@ -337,7 +337,7 @@ class RepositoriesResolver extends Object
 
   @override
   RepositoriesResolver clone() => new RepositoriesResolver()
-    ..aliasId = alias
+    ..aliasId = aliasId
     ..nodesResolver = nodesResolver.clone();
 }
 
@@ -358,7 +358,7 @@ class LoginResolver extends Object
   String get name => 'login';
 
   @override
-  LoginResolver clone() => new LoginResolver()..aliasId = alias;
+  LoginResolver clone() => new LoginResolver()..aliasId = aliasId;
 }
 
 class BioResolver extends Object
@@ -368,7 +368,7 @@ class BioResolver extends Object
   String get name => 'bio';
 
   @override
-  BioResolver clone() => new BioResolver()..aliasId = alias;
+  BioResolver clone() => new BioResolver()..aliasId = aliasId;
 }
 
 class DescriptionResolver extends Object
@@ -378,7 +378,7 @@ class DescriptionResolver extends Object
   String get name => 'description';
 
   @override
-  DescriptionResolver clone() => new DescriptionResolver()..aliasId = alias;
+  DescriptionResolver clone() => new DescriptionResolver()..aliasId = aliasId;
 }
 
 class NameResolver extends Object
@@ -388,7 +388,7 @@ class NameResolver extends Object
   String get name => 'name';
 
   @override
-  NameResolver clone() => new NameResolver()..aliasId = alias;
+  NameResolver clone() => new NameResolver()..aliasId = aliasId;
 }
 
 class CreatedAtResolver extends Object
@@ -398,7 +398,7 @@ class CreatedAtResolver extends Object
   String get name => 'createdAt';
 
   @override
-  CreatedAtResolver clone() => new CreatedAtResolver()..aliasId = alias;
+  CreatedAtResolver clone() => new CreatedAtResolver()..aliasId = aliasId;
 }
 
 class IdResolver extends Object with Scalar<String>, Alias implements GQLField {
@@ -406,7 +406,7 @@ class IdResolver extends Object with Scalar<String>, Alias implements GQLField {
   String get name => 'id';
 
   @override
-  IdResolver clone() => new IdResolver()..aliasId = alias;
+  IdResolver clone() => new IdResolver()..aliasId = aliasId;
 }
 
 class BodyResolver extends Object
@@ -416,5 +416,5 @@ class BodyResolver extends Object
   String get name => 'body';
 
   @override
-  BodyResolver clone() => new BodyResolver()..aliasId = alias;
+  BodyResolver clone() => new BodyResolver()..aliasId = aliasId;
 }

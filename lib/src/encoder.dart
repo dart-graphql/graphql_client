@@ -4,8 +4,13 @@
 
 part of graphql_client.converter;
 
-class GraphQLEncoder extends Converter<GQLOperation, String> {
-  const GraphQLEncoder();
+/// A GQL query encoder.
+///
+/// It converts a [GQLOperation] into a [String].
+/// The output string is GQL compliant.
+class GQLEncoder extends Converter<GQLOperation, String> {
+  /// Creates an [GQLEncoder].
+  const GQLEncoder();
 
   @override
   String convert(GQLOperation operation) {
