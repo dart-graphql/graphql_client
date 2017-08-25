@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.2
+
+- Refactor the client
+- Create a DSL that supports very GQL features
+- Ready to support code generation
+
 ## 0.0.1
 
 - Initial version.
