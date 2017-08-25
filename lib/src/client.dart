@@ -62,7 +62,7 @@ class GQLClient {
         body: JSON.encode(requestBody),
       );
 
-      final data = _parseResponse(res.body);
+      final data = _parseResponse(res);
 
       logMessage(Level.INFO, 'Receive response', logger);
       logMessage(Level.FINE, 'with body $data', logger);
@@ -93,18 +93,22 @@ class GQLClient {
     return execute(operation, headers: headers, variables: variables);
   }
 
-  Map _parseResponse(String body) {
-    try {
-      final jsonResponse = JSON.decode(body);
-      if (jsonResponse['errors'] != null) {
-        throw new GQLException('Error returned by the server in the query',
-            jsonResponse['errors']);
-      }
+  Map _parseResponse(Response response) {
+    final statusCode = response.statusCode;
+    final reasonPhrase = response.reasonPhrase;
 
-      return jsonResponse['data'];
-    } on GQLException {
-      rethrow;
+    if (statusCode < 200 || statusCode >= 400) {
+      throw new ClientException('Network Error: $statusCode $reasonPhrase');
     }
+
+    final jsonResponse = JSON.decode(response.body);
+
+    if (jsonResponse['errors'] != null) {
+      throw new GQLException(
+          'Error returned by the server in the query', jsonResponse['errors']);
+    }
+
+    return jsonResponse['data'];
   }
 
   void _resolveQuery(GQLField operation, Map data) {
