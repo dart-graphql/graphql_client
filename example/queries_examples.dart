@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style license
 // that can be found in the LICENSE file.
 
-import 'package:graphql_client/graphql_client.dart';
+import 'package:graphql_client/graphql_dsl.dart';
 
 // ignore_for_file: public_member_api_docs
 // ignore_for_file: slash_for_doc_comments

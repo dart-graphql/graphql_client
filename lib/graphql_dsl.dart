@@ -5,8 +5,6 @@
 /// Support for doing something awesome.
 ///
 /// More dartdocs go here.
-library graphql_client;
+library graphql_client.dsl;
 
-export 'src/client.dart';
-export 'src/converter.dart';
-export 'src/exceptions.dart';
+export 'src/graphql.dart';

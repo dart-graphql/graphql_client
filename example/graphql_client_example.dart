@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style license
 // that can be found in the LICENSE file.
 
+// ignore_for_file: public_member_api_docs
+
 import 'dart:async';
 import 'dart:io';
 
@@ -11,8 +13,6 @@ import 'package:logging/logging.dart';
 import 'package:graphql_client/graphql_client.dart';
 
 import 'queries_examples.dart';
-
-// ignore_for_file: public_member_api_docs
 
 Future main() async {
   Logger.root
