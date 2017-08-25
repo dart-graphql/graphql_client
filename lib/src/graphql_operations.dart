@@ -4,19 +4,16 @@
 
 part of graphql_client.definitions;
 
-/// A GQL operation type.
-enum OperationType {
-  /// Represents the GQL type: `query`,
-  query,
+/// The GQL type: `query`,
+const String queryType = 'query';
 
-  /// Represents the GQL type: `mutation`,
-  mutation,
+/// The GQL type: `mutation`,
+const String mutationType = 'mutation';
 
-  /// Represents the GQL type: `subscription`,
-  ///
-  /// WARNING: This is not supported.
-  subscription,
-}
+/// The GQL type: `subscription`,
+///
+/// WARNING: This is not supported.
+const String subscriptionType = 'subscription';
 
 /// A GQL field.
 ///
@@ -39,10 +36,10 @@ abstract class GQLField {
 
 /// A GQL operation.
 ///
-/// This could be whether a: [OperationType.query] or [OperationType.mutation].
+/// This could be whether a: [queryType], [mutationType] or [subscriptionType].
 abstract class GQLOperation extends GQLField {
   /// The query type.
-  OperationType get type;
+  String get type;
 }
 
 /// A GQL Fragment.

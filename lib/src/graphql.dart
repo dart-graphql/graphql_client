@@ -12,3 +12,4 @@ part 'graphql_arguments.dart';
 part 'graphql_scalars.dart';
 part 'graphql_fields.dart';
 part 'graphql_fragments.dart';
+part 'graphql_directives.dart';
