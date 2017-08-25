@@ -22,6 +22,7 @@ import 'dart:io'; // Optional because I am reading env variables.
 import 'package:http/http.dart';
 import 'package:logging/logging.dart'; // Optional
 import 'package:graphql_client/graphql_client.dart';
+import 'package:graphql_client/graphql_dsl.dart';
 
 /**
  * Define a custom GQL query.
@@ -72,7 +73,7 @@ class BioResolver extends Object with Scalar<String> implements GQLField {
 }
 
 Future main() async {
-  Logger.root
+  Logger.root // Optional
     ..level = Level.ALL
     ..onRecord.listen((rec) {
       print('${rec.level.name}: ${rec.time}: ${rec.message}');
@@ -82,7 +83,7 @@ Future main() async {
   final apiToken = Platform.environment['GITHUBQL_TOKEN'];
 
   final client = new Client();
-  final logger = new Logger('GQLClient'); // This is optional.
+  final logger = new Logger('GQLClient'); // Optional.
   final graphQLClient = new GQLClient(
     client: client,
     logger: logger,
