@@ -5,7 +5,7 @@ GraphQL Client written in Dart 🎯.
 It relies on the [dart http client][http] to send GQL queries. As the **http** client, tt's platform-independent, 
 and can be used on the command-line, browser and flutter.
 It has a custom DSL to write GQL queries and will have soon a code generator converting GQL queries to this DSL.
-Stay tuned 🎤.
+Stay tuned 🎤. If you want to help, please check [this doc][code_generator].
 
 ## Usage
 
@@ -109,10 +109,10 @@ Future main() async {
 
 ```
 
-
 ## Roadmap
 
 You can find it [here][roadmap].
 
 [roadmap]: https://github.com/hourliert/graphql_client/blob/master/ROADMAP.md
 [http]: https://pub.dartlang.org/packages/http
+[code_generator]: https://github.com/hourliert/graphql_client/blob/master/doc/code_generator.md
