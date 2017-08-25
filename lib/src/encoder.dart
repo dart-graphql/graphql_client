@@ -50,20 +50,14 @@ class GQLEncoder extends Converter<GQLOperation, String> {
 
   String _encodeOperation(GQLOperation operation) {
     final GQLField field = operation;
-    final rootResolver = _encodeOperationResolvers(operation);
-    final operationType =
-        operation.type == OperationType.mutation ? 'mutation' : 'query';
-    var args = '';
+    final rootField = _encodeOperationFields(operation);
+    final args = (field is Arguments) ? '(${field.args})' : '';
 
-    if (field is Arguments) {
-      args = '(${field.args})';
-    }
-
-    return '$operationType ${operation.name} $args { $rootResolver }';
+    return '${operation.type} ${operation.name} $args { $rootField }';
   }
 
-  String _encodeOperationResolvers(GQLField operation) =>
-      _extractFields(operation).map(_encodeResolver).join(' ');
+  String _encodeOperationFields(GQLField operation) =>
+      _extractFields(operation).map(_encodeField).join(' ');
 
   String _encodeOperationInlineFragments(GQLField operation) =>
       _extractFragments(operation).map(_encodeInlineFragment).join(' ');
@@ -72,24 +66,27 @@ class GQLEncoder extends Converter<GQLOperation, String> {
       _extractNestedFragments(operation).map(_encodeFragment).join('\n');
 
   String _encodeFragment(GQLFragment fragment) {
-    final rootResolver = _encodeOperationResolvers(fragment);
+    final rootField = _encodeOperationFields(fragment);
     final fragmentsGQL = _encodeNestedOperationFragments(fragment);
 
-    return 'fragment ${fragment.name} on ${fragment.onType} { $rootResolver }${fragmentsGQL.isNotEmpty ? fragmentsGQL : ''}';
+    return 'fragment ${fragment.name} on ${fragment.onType} { $rootField }${fragmentsGQL.isNotEmpty ? fragmentsGQL : ''}';
   }
 
-  String _encodeResolver(GQLField operation) {
-    final childrenGQL = _encodeOperationResolvers(operation);
+  String _encodeField(GQLField operation) {
+    final childrenGQL = _encodeOperationFields(operation);
     final childrenFragment = _encodeOperationInlineFragments(operation);
 
     final alias = (operation is Alias) ? '${operation.alias}: ' : '';
     final name = operation.name != null ? '${operation.name} ' : '';
     final args = (operation is Arguments) ? '(${operation.args}) ' : '';
+    final directive = (operation is Directives)
+        ? '@${operation.directive}(if: ${operation.directiveValue}) '
+        : '';
     final fields = (childrenGQL.isNotEmpty || childrenFragment.isNotEmpty)
         ? '{ $childrenGQL $childrenFragment }'
         : '';
 
-    return '$alias$name$args$fields';
+    return '$alias$name$args$directive$fields';
   }
 
   String _encodeInlineFragment(GQLFragment fragment) => '...${fragment.name}';

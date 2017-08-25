@@ -21,7 +21,7 @@ class LoginQuery extends Object with Fields implements GQLOperation {
   ViewerResolver viewer = new ViewerResolver();
 
   @override
-  OperationType get type => OperationType.query;
+  String get type => queryType;
 
   @override
   String get name => 'LoginQuery';
@@ -39,7 +39,7 @@ class AddTestCommentMutation extends Object
   AddCommentMutation addComment = new AddCommentMutation();
 
   @override
-  OperationType get type => OperationType.mutation;
+  String get type => mutationType;
 
   @override
   String get name => 'AddTestCommentMutation';
@@ -352,10 +352,16 @@ class RepositoriesResolver extends Object
  */
 
 class LoginResolver extends Object
-    with Scalar<String>, Alias
+    with Scalar<String>, Alias, Directives
     implements GQLField {
   @override
   String get name => 'login';
+
+  @override
+  String get directive => includeDirective;
+
+  @override
+  String get directiveValue => 'false';
 
   @override
   LoginResolver clone() => new LoginResolver()..aliasId = aliasId;
