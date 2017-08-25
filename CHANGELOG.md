@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.0.3
+
+### Features
+- Support GQL directive
+
+### Breaking changes
+- Refactor OperationType. Remove the enum and replace its value by constant strings
+
+### Minor changes
+- Remove getter and setter of Scalar & ScalarCollection mixin
+
 ## 0.0.2
 
 - Refactor the client

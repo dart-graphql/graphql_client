@@ -1,6 +1,6 @@
 name: graphql_client
 description: A GraphQL client.
-version: 0.0.2
+version: 0.0.3
 homepage: https://github.com/hourliert/graphql_client
 author: Thomas Hourlier <hourliert@gmail.com>
 
