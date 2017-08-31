@@ -10,5 +10,5 @@ set -e
 pushd $PKG
 pub upgrade
 
-dartanalyzer --fatal-warnings lib
+dartanalyzer --fatal-warnings .
 dartfmt --dry-run --set-exit-if-changed .
