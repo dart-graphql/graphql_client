@@ -1,7 +1,10 @@
 language: dart
+
 dart:
   - stable
-  - dev
-before_script:
-  - dartanalyzer .
-  - dartfmt --dry-run --set-exit-if-changed .
+
+env:
+  - PKG=graphql_client
+  - PKG=graphql_client_generator
+
+script: ./tool/travis.sh
