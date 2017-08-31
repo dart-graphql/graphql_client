@@ -31,7 +31,7 @@ This is how the [Apollo Swift client][swift_client] works.
 
 ## Implementation
 
-* Create a dart transformer
+* Create a dart generator
 * Read all `*.graphql` files
 * Parse the GQL using a library like [this one][graphql_parser].
 * Generate the corresponding dart code using the [code_builder][code_builder] library.
