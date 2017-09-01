@@ -2,8 +2,12 @@
 // Use of this source code is governed by a MIT-style license
 // that can be found in the LICENSE file.
 
-library graphql_client;
+import 'dart:async';
 
-export 'src/client.dart';
-export 'src/converter.dart';
-export 'src/exceptions.dart';
+import 'package:build_runner/build_runner.dart';
+
+import 'phases.dart';
+
+Future main() async {
+  watch(phases);
+}

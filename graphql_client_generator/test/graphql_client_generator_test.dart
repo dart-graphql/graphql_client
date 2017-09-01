@@ -2,8 +2,10 @@
 // Use of this source code is governed by a MIT-style license
 // that can be found in the LICENSE file.
 
-library graphql_client;
+import 'package:test/test.dart';
 
-export 'src/client.dart';
-export 'src/converter.dart';
-export 'src/exceptions.dart';
+void main() {
+  test('Placeholder', () {
+    expect(true, equals(true));
+  });
+}

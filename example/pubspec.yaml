@@ -1,0 +1,17 @@
+name: graphql_client_example
+
+environment:
+  sdk: '>=1.20.1 <2.0.0'
+
+dependencies:
+  graphql_client: ^0.0.3
+  graphql_client_generator: ^0.0.0
+
+dev_dependencies:
+  build_runner: ^0.4.0
+
+dependency_overrides:
+  graphql_client:
+    path: ../graphql_client
+  graphql_client_generator:
+    path: ../graphql_client_generator
