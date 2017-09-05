@@ -9,37 +9,41 @@ import 'dart:async';
 import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
+import 'package:graphql_parser/graphql_parser.dart';
+
+import 'src/gql_parser.dart';
+import 'src/renderer.dart';
 
 class GQLBuilder extends Builder {
-  final DartEmitter _emitter = const DartEmitter();
-  final DartFormatter _formatter = new DartFormatter();
+  static const inputExtension = '.graphql';
+  static const outputExtension = '.g.dart';
+
+  final Renderer _renderer =
+      new Renderer(const DartEmitter(), new DartFormatter());
+  final GQLParser _parser = new GQLParser();
 
   @override
   Future build(BuildStep buildStep) async {
     final id = buildStep.inputId;
+    final outputId = id.changeExtension(GQLBuilder.outputExtension);
+
     final gql = await buildStep.readAsString(id);
 
-    final animal = new Class((b) => b
-      ..name = 'Animal'
-      ..extend = const Reference('Organism').toType()
-      ..methods.add(new Method.returnsVoid((b) => b
-        ..name = 'eat'
-        ..lambda = true
-        ..body = new Code((b) => b..code = 'print(\'Yum\')'))));
-    final code = _formatter.format('${animal.accept(_emitter)}');
+    final gqlDefinitions = _parser.parse(gql);
 
-    print(gql);
+    final code = _renderer.buildLibrary(
+        outputId: outputId, gqlDefinitions: gqlDefinitions);
 
-    return buildStep.writeAsString(_copiedAssetId(id), code);
+    print(code);
+
+    return buildStep.writeAsString(outputId, code);
   }
 
   @override
   Map<String, List<String>> get buildExtensions => const {
-        '.graphql': const ['.g.dart'],
+        '${GQLBuilder.inputExtension}': const [outputExtension],
       };
 
   @override
   String toString() => 'GQLBuilder';
 }
-
-AssetId _copiedAssetId(AssetId inputId) => inputId.changeExtension('.g.dart');

@@ -9,11 +9,12 @@ environment:
 
 dependencies:
   logging: ^0.11.3
-  build: ^0.7.0
+  build: ^0.10.0
   build_barback: ^0.4.0
   code_builder: ^2.0.0-alpha+1
   dart_style: ^1.0.7
   graphql_parser: ^1.0.0
+  path: ^1.4.2
 
 dev_dependencies:
   test: ^0.12.0
