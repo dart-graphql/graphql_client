@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.4
+
+### Breaking changes
+- The DSL supports raw GQL for directives and arguments.
+
+
 ## 0.0.3
 
 ### Features

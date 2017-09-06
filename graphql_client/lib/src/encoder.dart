@@ -51,7 +51,7 @@ class GQLEncoder extends Converter<GQLOperation, String> {
   String _encodeOperation(GQLOperation operation) {
     final GQLField field = operation;
     final rootField = _encodeOperationFields(operation);
-    final args = (field is Arguments) ? '(${field.args})' : '';
+    final args = (field is Arguments) ? field.args : '';
 
     return '${operation.type} ${operation.name} $args { $rootField }';
   }
@@ -78,10 +78,9 @@ class GQLEncoder extends Converter<GQLOperation, String> {
 
     final alias = (operation is Alias) ? '${operation.alias}: ' : '';
     final name = operation.name != null ? '${operation.name} ' : '';
-    final args = (operation is Arguments) ? '(${operation.args}) ' : '';
-    final directive = (operation is Directives)
-        ? '@${operation.directive}(if: ${operation.directiveValue}) '
-        : '';
+    final args = (operation is Arguments) ? '${operation.args} ' : '';
+    final directive =
+        (operation is Directives) ? '${operation.directives} ' : '';
     final fields = (childrenGQL.isNotEmpty || childrenFragment.isNotEmpty)
         ? '{ $childrenGQL $childrenFragment }'
         : '';

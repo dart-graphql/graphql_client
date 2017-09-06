@@ -4,12 +4,6 @@
 
 part of graphql_client.definitions;
 
-/// The GQL directive: `include`
-const String includeDirective = 'include';
-
-/// The GQL directive: `skip`
-const String skipDirective = 'skip';
-
 /// A GraphQL directive.
 ///
 /// It could be applied as a mixin on a [GQLField].
@@ -21,11 +15,6 @@ const String skipDirective = 'skip';
 /// }
 /// ```
 abstract class Directives implements GQLField {
-  /// The directive type.
-  ///
-  /// Should be [includeDirective] or [skipDirective]
-  String get directive;
-
   /// The GQL directive.
-  String get directiveValue;
+  String get directives;
 }

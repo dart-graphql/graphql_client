@@ -45,7 +45,7 @@ class AddTestCommentMutation extends Object
   String get name => 'AddTestCommentMutation';
 
   @override
-  String get args => '\$issueId: ID!, \$body: String!';
+  String get args => '(\$issueId: ID!, \$body: String!)';
 
   @override
   List<GQLField> get fields => [addComment];
@@ -102,7 +102,7 @@ class AddCommentMutation extends Object
   String get name => 'addComment';
 
   @override
-  String get args => 'input: {subjectId: \$issueId, body: \$body}';
+  String get args => '(input: {subjectId: \$issueId, body: \$body})';
 
   @override
   List<GQLField> get fields => [commentEdge];
@@ -214,7 +214,7 @@ class RepositoryResolver extends Object
   String get name => 'repository';
 
   @override
-  String get args => 'name: "graphql_client"';
+  String get args => '(name: "graphql_client")';
 
   @override
   List<GQLField> get fields => [createdAt];
@@ -248,7 +248,7 @@ class GistResolver extends Object
   String get name => 'gist';
 
   @override
-  String get args => 'name: "e675723fc16a5b9bd4d1"';
+  String get args => '(name: "e675723fc16a5b9bd4d1")';
 
   @override
   List<GQLFragment> get fragments => [_descriptiveGistFragment];
@@ -330,7 +330,7 @@ class RepositoriesResolver extends Object
   String get name => 'repositories';
 
   @override
-  String get args => 'first: 5';
+  String get args => '(first: 5)';
 
   @override
   List<GQLField> get fields => [nodesResolver];
@@ -358,10 +358,7 @@ class LoginResolver extends Object
   String get name => 'login';
 
   @override
-  String get directive => includeDirective;
-
-  @override
-  String get directiveValue => 'false';
+  String get directives => '@include(if: false)';
 
   @override
   LoginResolver clone() => new LoginResolver()..aliasId = aliasId;
