@@ -22,8 +22,6 @@ class GQLParser {
 
   List<Spec> parseSelection(List<SelectionContext> selections,
       [List<Spec> specs = const []]) {
-    print(selections.map((s) => parseFinalResolver(s.field)));
-
     return selections.map((s) => parseFinalResolver(s.field)).toList();
   }
 
@@ -60,7 +58,7 @@ class GQLParser {
             ..type = MethodType.getter
             ..lambda = true
             ..returns = const Reference('String')
-            ..body = new Code((b) => b..code = "'$arguments'")
+            ..body = new Code((b) => b..code = "'($arguments)'")
             ..annotations.add(new Annotation(
                 (b) => b..code = new Code((b) => b..code = 'override'))))
           : null,

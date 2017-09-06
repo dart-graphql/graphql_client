@@ -1,5 +1,3 @@
-query LoginQuery {
-  viewer {
-    login
-  }
+query SimpleQuery {
+  toto: login(test: 4) @include(if: true)
 }
