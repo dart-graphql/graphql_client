@@ -23,12 +23,7 @@ class AppComponent implements OnInit {
 
   @override
   ngOnInit() async {
-    final res = await _gqlClient.execute(
-      new FetchLoginQuery(),
-      headers: {
-        'Authorization': 'bearer 032617f107dbefc84035adb7cf9c404c86d4013e',
-      },
-    );
+    final res = await _gqlClient.execute(new FetchLoginQuery());
 
     username = res.viewer.login.value;
   }

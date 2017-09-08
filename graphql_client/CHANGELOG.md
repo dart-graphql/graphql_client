@@ -2,9 +2,11 @@
 
 ## 0.0.4
 
+### Features
+- Support headers injection in constructor
+
 ### Breaking changes
 - The DSL supports raw GQL for directives and arguments.
-
 
 ## 0.0.3
 

@@ -27,6 +27,8 @@ class GQLClient {
   /// The GQL endpoint.
   final String endPoint;
 
+  final Map<String, String> defaultHeaders;
+
   /// Creates a [GQLClient].
   ///
   /// A [client] and a [endPoint] are required.
@@ -34,6 +36,7 @@ class GQLClient {
     @required this.client,
     @required this.endPoint,
     this.logger,
+    this.defaultHeaders = const {},
   });
 
   /// Executes and returns the [GQLOperation].
@@ -42,7 +45,7 @@ class GQLClient {
   /// It waits for the response and throw a [GQLException] if the query has errors.
   /// Else, it resolves the query and return it.
   Future<T> execute<T extends GQLOperation>(T operation,
-      {Map variables = const {}, Map headers}) async {
+      {Map variables = const {}, Map headers = const {}}) async {
     try {
       final requestBody = {
         'query': GRAPHQL.encode(operation),
@@ -58,7 +61,7 @@ class GQLClient {
 
       final res = await client.post(
         endPoint,
-        headers: headers,
+        headers: {}..addAll(defaultHeaders)..addAll(headers),
         body: JSON.encode(requestBody),
       );
 
