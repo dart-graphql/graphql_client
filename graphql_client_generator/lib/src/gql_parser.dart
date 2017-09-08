@@ -13,10 +13,24 @@ class GQLParser {
     return parseOperation(document.definitions.first);
   }
 
-  List<Spec> parseOperation(OperationDefinitionContext query) {
-    final gqlDefinitions = parseSelections(query.selectionSet.selections, []);
+  List<Spec> parseOperation(OperationDefinitionContext operation) {
+    final operationName = getOperationName(operation);
+    final operationFields = getOperationFields(operation);
+    final operationMixin = getOperationMixin(operation);
+    final operationMethods = getOperationMethods(operation);
 
-    return []..addAll(gqlDefinitions);
+    final gqlDefinitions =
+        parseSelections(operation.selectionSet.selections, []);
+
+    return [
+      new Class((b) => b
+        ..name = operationName
+        ..extend = const Reference('Object')
+        ..mixins.addAll(operationMixin)
+        ..implements.add(const Reference('GQLOperation'))
+        ..methods.addAll(operationMethods)
+        ..fields.addAll(operationFields))
+    ]..addAll(gqlDefinitions);
   }
 
   List<Spec> parseSelections(
@@ -53,7 +67,6 @@ class GQLParser {
 
   bool isScalarFieldResolver(FieldContext field) =>
       field.selectionSet == null || field.selectionSet.selections.isEmpty;
-
   String getFieldName(FieldContext field) =>
       field.fieldName.alias?.name ?? field.fieldName.name;
   String getFieldAlias(FieldContext field) => field.fieldName.alias?.alias;
@@ -70,7 +83,15 @@ class GQLParser {
 
   Iterable<Field> getResolverFields(FieldContext field) {
     if (!isScalarFieldResolver(field)) {
-      return field.selectionSet.selections.map((s) {
+      return extractFieldFromSelections(field.selectionSet.selections);
+    }
+
+    return const [];
+  }
+
+  Iterable<Field> extractFieldFromSelections(
+          List<SelectionContext> selections) =>
+      selections.map((s) {
         final nestedField = s.field;
         final nestedResolverName = getResolverName(nestedField);
 
@@ -80,10 +101,6 @@ class GQLParser {
           ..assignment =
               new Code((b) => b..code = 'new $nestedResolverName()'));
       });
-    }
-
-    return const [];
-  }
 
   Iterable<Reference> getResolverMixin(FieldContext field) {
     final alias = getFieldAlias(field);
@@ -162,6 +179,84 @@ class GQLParser {
       new Method((b) => b
         ..name = 'clone'
         ..returns = new Reference(resolverName)
+        ..lambda = true
+        ..body = new Code((b) => b..code = cloneMethodFields)
+        ..annotations.add(new Annotation(
+            (b) => b..code = new Code((b) => b..code = 'override')))),
+    ].where((m) => m != null);
+  }
+
+  bool isEmptyOperation(OperationDefinitionContext operation) =>
+      operation.selectionSet == null ||
+      operation.selectionSet.selections.isEmpty;
+
+  String getOperationType(OperationDefinitionContext operation) =>
+      operation.isQuery ? 'query' : 'mutation';
+
+  String getOperationName(OperationDefinitionContext operation) {
+    final name = operation.name;
+    final type = getOperationType(operation);
+
+    return '${name[0].toUpperCase()}${name.substring(1)}${type[0].toUpperCase()}${type.substring(1)}';
+  }
+
+  Iterable<Field> getOperationFields(OperationDefinitionContext operation) {
+    if (!isEmptyOperation(operation)) {
+      return extractFieldFromSelections(operation.selectionSet.selections);
+    }
+
+    return const [];
+  }
+
+  Iterable<Reference> getOperationMixin(OperationDefinitionContext operation) =>
+      [
+        !isEmptyOperation(operation) ? const Reference('Fields') : null,
+      ].where((r) => r != null);
+
+  Iterable<Method> getOperationMethods(OperationDefinitionContext operation) {
+    final operationName = getOperationName(operation);
+    final operationFields = getOperationFields(operation);
+    final operationType = getOperationType(operation);
+
+    final operationFieldsNames = operationFields.map((f) => f.name);
+    final operationFieldsDeclarations = operationFieldsNames.join(', ');
+    final cloneMethodFields = 'new $operationName()${
+        operationFieldsNames.isNotEmpty ?
+        '..${operationFieldsNames.map((n) => '$n = $n.clone()').join('..')}' :
+        ''
+    }';
+
+    return [
+      new Method((b) => b
+        ..name = 'type'
+        ..type = MethodType.getter
+        ..lambda = true
+        ..returns = const Reference('String')
+        ..body = new Code((b) => b
+          ..code = "${operationType == 'query' ? 'queryType' : 'mutationType'}")
+        ..annotations.add(new Annotation(
+            (b) => b..code = new Code((b) => b..code = 'override')))),
+      new Method((b) => b
+        ..name = 'name'
+        ..type = MethodType.getter
+        ..lambda = true
+        ..returns = const Reference('String')
+        ..body = new Code((b) => b..code = "'${operation.name}'")
+        ..annotations.add(new Annotation(
+            (b) => b..code = new Code((b) => b..code = 'override')))),
+      !isEmptyOperation(operation)
+          ? new Method((b) => b
+            ..name = 'fields'
+            ..type = MethodType.getter
+            ..lambda = true
+            ..returns = const Reference('List<GQLField>')
+            ..body = new Code((b) => b..code = "[$operationFieldsDeclarations]")
+            ..annotations.add(new Annotation(
+                (b) => b..code = new Code((b) => b..code = 'override'))))
+          : null,
+      new Method((b) => b
+        ..name = 'clone'
+        ..returns = new Reference(operationName)
         ..lambda = true
         ..body = new Code((b) => b..code = cloneMethodFields)
         ..annotations.add(new Annotation(

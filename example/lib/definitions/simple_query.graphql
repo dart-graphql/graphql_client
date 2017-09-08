@@ -1,6 +1,0 @@
-query SimpleQuery {
-  viewer {
-    test: login
-    avatarUrl(size: 200)
-  }
-}
