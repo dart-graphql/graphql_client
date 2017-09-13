@@ -26,12 +26,12 @@ const String subscriptionType = 'subscription';
 /// It could be "pimped" with mixin: [Fields], [Fragments], [Arguments] and [Alias].
 abstract class GQLField {
   /// The GQL field name.
-  String get name;
+  String get gqlName;
 
   /// Returns a perfect copy of the field.
   ///
   /// This is mandatory when doing query resolving using GQL collections.
-  GQLField clone();
+  GQLField gqlClone();
 }
 
 /// A GQL operation.
@@ -39,7 +39,7 @@ abstract class GQLField {
 /// This could be whether a: [queryType], [mutationType] or [subscriptionType].
 abstract class GQLOperation extends GQLField {
   /// The query type.
-  String get type;
+  String get gqlType;
 }
 
 /// A GQL Fragment.
@@ -70,5 +70,5 @@ abstract class GQLOperation extends GQLField {
 /// ```
 abstract class GQLFragment extends GQLField {
   /// The type the fragment depends on.
-  String get onType;
+  String get gqlOnType;
 }

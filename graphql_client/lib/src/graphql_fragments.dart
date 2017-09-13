@@ -31,5 +31,5 @@ part of graphql_client.definitions;
 /// DescriptionFragment is a nested fragment of the `gist` field.
 abstract class Fragments implements GQLField {
   /// The list of nested fragments of this field.
-  List<GQLFragment> get fragments => const [];
+  List<GQLFragment> get gqlFragments => const [];
 }

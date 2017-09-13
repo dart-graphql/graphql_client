@@ -6,7 +6,7 @@ library graphql_client_generator.transformer;
 
 import 'package:build_barback/build_barback.dart';
 
-import 'builder.dart';
+import 'package:graphql_client_generator/src/builder.dart';
 
 class GQLTransformer extends BuilderTransformer {
   GQLTransformer.asPlugin(_) : super(new GQLBuilder());

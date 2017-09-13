@@ -25,8 +25,8 @@ abstract class Alias implements GQLField {
   /// The unique random ID of the alias.
   ///
   /// We would prefer to make it private but it seems not possible.
-  int aliasId = getRandomInt();
+  int gqlAliasId = getRandomInt();
 
   /// The GQL alias.
-  String get alias => '${name}_$aliasId';
+  String get gqlAlias => '${gqlName}_$gqlAliasId';
 }

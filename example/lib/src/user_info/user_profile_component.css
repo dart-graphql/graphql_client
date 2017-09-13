@@ -1,0 +1,14 @@
+:host {
+    /* This is equivalent of the 'body' selector of a page. */
+}
+
+.horizontal-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.error {
+    color: red;
+}

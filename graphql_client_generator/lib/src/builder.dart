@@ -9,10 +9,9 @@ import 'dart:async';
 import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
-import 'package:graphql_parser/graphql_parser.dart';
 
-import 'src/gql_parser.dart';
-import 'src/renderer.dart';
+import 'gql_parser.dart';
+import 'renderer.dart';
 
 class GQLBuilder extends Builder {
   static const inputExtension = '.graphql';

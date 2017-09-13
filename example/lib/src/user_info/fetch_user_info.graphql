@@ -1,0 +1,8 @@
+query FetchUserInfo($avatarSize: Int) {
+  viewer {
+    login
+    bio
+    location
+    avatarUrl(size: $avatarSize)
+  }
+}

@@ -41,6 +41,8 @@ class GQLParser {
       if (isScalarFieldResolver(field)) {
         specs.add(parseField(field));
       } else {
+        // TODO: parse collection field Resolver (nodes & edges)
+
         specs
           ..add(parseField(field))
           ..addAll(parseSelections(field.selectionSet.selections, []));
@@ -65,13 +67,36 @@ class GQLParser {
       ..fields.addAll(resolverFields));
   }
 
+  bool isCollectionField(FieldContext field) =>
+      isNamedField(field, 'nodes') ||
+      isNamedField(field, 'edges') ||
+      isNamedField(field, 'totalCount');
+
+  bool isNamedField(FieldContext field, String name) =>
+      getFieldName(field) == name;
+
   bool isScalarFieldResolver(FieldContext field) =>
       field.selectionSet == null || field.selectionSet.selections.isEmpty;
+
+  bool isScalarCollectionFieldResolver(FieldContext field) =>
+      !isScalarFieldResolver(field) &&
+      field.selectionSet.selections.any((s) => isCollectionField(s.field));
+
+  bool hasNestedNamedField(FieldContext field, String name) =>
+      !isScalarFieldResolver(field) &&
+      field.selectionSet.selections.any((s) => isNamedField(s.field, name));
+
   String getFieldName(FieldContext field) =>
       field.fieldName.alias?.name ?? field.fieldName.name;
+
   String getFieldAlias(FieldContext field) => field.fieldName.alias?.alias;
-  String getFieldArguments(FieldContext field) =>
-      field.arguments.map((a) => a.toSource()).join(', ');
+
+  String getFieldArguments(FieldContext field) {
+    final innerValue = field.arguments.map((a) => a.toSource()).join(', ');
+
+    return innerValue.isNotEmpty ? '($innerValue)' : '';
+  }
+
   String getFieldDirectives(FieldContext field) =>
       field.directives.map((d) => d.toSource()).join(', ');
 
@@ -95,6 +120,26 @@ class GQLParser {
         final nestedField = s.field;
         final nestedResolverName = getResolverName(nestedField);
 
+        if (isCollectionField(nestedField)) {
+          var collectionResolverName = '';
+
+          if (isNamedField(nestedField, 'nodes')) {
+            collectionResolverName = 'nodesResolver';
+          }
+
+          if (isNamedField(nestedField, 'edges')) {
+            collectionResolverName = 'edgesResolver';
+          }
+
+          return new Field((b) => b
+            ..name = collectionResolverName
+            ..type = new Reference(nestedResolverName)
+            ..annotations.add(new Annotation(
+                (b) => b..code = new Code((b) => b..code = 'override')))
+            ..assignment =
+                new Code((b) => b..code = 'new $nestedResolverName()'));
+        }
+
         return new Field((b) => b
           ..name = getFieldAlias(nestedField) ?? getFieldName(nestedField)
           ..type = new Reference(nestedResolverName)
@@ -107,10 +152,19 @@ class GQLParser {
     final arguments = getFieldArguments(field);
     final directives = getFieldDirectives(field);
 
+    final hasNodesResolver = hasNestedNamedField(field, 'nodes');
+    final hasEdgesResolver = hasNestedNamedField(field, 'edges');
+
+    final scalarCollectionGenerics =
+        '<${hasNodesResolver ? 'NodesResolver' : 'Null'},${hasEdgesResolver ? 'EdgesResolver' : 'Null'}>';
+
     return [
       isScalarFieldResolver(field)
           ? const Reference('Scalar')
           : const Reference('Fields'),
+      isScalarCollectionFieldResolver(field)
+          ? new Reference('ScalarCollection$scalarCollectionGenerics')
+          : null,
       alias != null ? const Reference('Alias') : null,
       arguments.isNotEmpty ? const Reference('Arguments') : null,
       directives.isNotEmpty ? const Reference('Directives') : null,
@@ -129,17 +183,17 @@ class GQLParser {
     final resolverFieldsDeclarations = resolverFieldsNames.join(', ');
     final cloneMethodFields = 'new $resolverName()${
         alias != null ?
-        '..aliasId = aliasId' :
+        '..gqlAliasId = gqlAliasId' :
         ''
     }${
         resolverFieldsNames.isNotEmpty ?
-        '..${resolverFieldsNames.map((n) => '$n = $n.clone()').join('..')}' :
+        '..${resolverFieldsNames.map((n) => '$n = $n.gqlClone()').join('..')}' :
         ''
     }';
 
     return [
       new Method((b) => b
-        ..name = 'name'
+        ..name = 'gqlName'
         ..type = MethodType.getter
         ..lambda = true
         ..returns = const Reference('String')
@@ -148,17 +202,17 @@ class GQLParser {
             (b) => b..code = new Code((b) => b..code = 'override')))),
       arguments.isNotEmpty
           ? new Method((b) => b
-            ..name = 'args'
+            ..name = 'gqlArguments'
             ..type = MethodType.getter
             ..lambda = true
             ..returns = const Reference('String')
-            ..body = new Code((b) => b..code = "'($arguments)'")
+            ..body = new Code((b) => b..code = "r'$arguments'")
             ..annotations.add(new Annotation(
                 (b) => b..code = new Code((b) => b..code = 'override'))))
           : null,
       directives.isNotEmpty
           ? new Method((b) => b
-            ..name = 'directives'
+            ..name = 'gqlDirectives'
             ..type = MethodType.getter
             ..lambda = true
             ..returns = const Reference('String')
@@ -168,7 +222,7 @@ class GQLParser {
           : null,
       !isScalarFieldResolver(field)
           ? new Method((b) => b
-            ..name = 'fields'
+            ..name = 'gqlFields'
             ..type = MethodType.getter
             ..lambda = true
             ..returns = const Reference('List<GQLField>')
@@ -177,7 +231,7 @@ class GQLParser {
                 (b) => b..code = new Code((b) => b..code = 'override'))))
           : null,
       new Method((b) => b
-        ..name = 'clone'
+        ..name = 'gqlClone'
         ..returns = new Reference(resolverName)
         ..lambda = true
         ..body = new Code((b) => b..code = cloneMethodFields)
@@ -192,6 +246,11 @@ class GQLParser {
 
   String getOperationType(OperationDefinitionContext operation) =>
       operation.isQuery ? 'query' : 'mutation';
+
+  String getOperationArguments(OperationDefinitionContext operation) =>
+      operation.variableDefinitions != null
+          ? operation.variableDefinitions.toSource()
+          : '';
 
   String getOperationName(OperationDefinitionContext operation) {
     final name = operation.name;
@@ -208,27 +267,32 @@ class GQLParser {
     return const [];
   }
 
-  Iterable<Reference> getOperationMixin(OperationDefinitionContext operation) =>
-      [
-        !isEmptyOperation(operation) ? const Reference('Fields') : null,
-      ].where((r) => r != null);
+  Iterable<Reference> getOperationMixin(OperationDefinitionContext operation) {
+    final operationArguments = getOperationArguments(operation);
+
+    return [
+      !isEmptyOperation(operation) ? const Reference('Fields') : null,
+      operationArguments.isNotEmpty ? const Reference('Arguments') : null,
+    ].where((r) => r != null);
+  }
 
   Iterable<Method> getOperationMethods(OperationDefinitionContext operation) {
     final operationName = getOperationName(operation);
     final operationFields = getOperationFields(operation);
     final operationType = getOperationType(operation);
+    final operationArguments = getOperationArguments(operation);
 
     final operationFieldsNames = operationFields.map((f) => f.name);
     final operationFieldsDeclarations = operationFieldsNames.join(', ');
     final cloneMethodFields = 'new $operationName()${
         operationFieldsNames.isNotEmpty ?
-        '..${operationFieldsNames.map((n) => '$n = $n.clone()').join('..')}' :
+        '..${operationFieldsNames.map((n) => '$n = $n.gqlClone()').join('..')}' :
         ''
     }';
 
     return [
       new Method((b) => b
-        ..name = 'type'
+        ..name = 'gqlType'
         ..type = MethodType.getter
         ..lambda = true
         ..returns = const Reference('String')
@@ -237,16 +301,26 @@ class GQLParser {
         ..annotations.add(new Annotation(
             (b) => b..code = new Code((b) => b..code = 'override')))),
       new Method((b) => b
-        ..name = 'name'
+        ..name = 'gqlName'
         ..type = MethodType.getter
         ..lambda = true
         ..returns = const Reference('String')
         ..body = new Code((b) => b..code = "'${operation.name}'")
         ..annotations.add(new Annotation(
             (b) => b..code = new Code((b) => b..code = 'override')))),
+      operationArguments.isNotEmpty
+          ? new Method((b) => b
+            ..name = 'gqlArguments'
+            ..type = MethodType.getter
+            ..lambda = true
+            ..returns = const Reference('String')
+            ..body = new Code((b) => b..code = "r'$operationArguments'")
+            ..annotations.add(new Annotation(
+                (b) => b..code = new Code((b) => b..code = 'override'))))
+          : null,
       !isEmptyOperation(operation)
           ? new Method((b) => b
-            ..name = 'fields'
+            ..name = 'gqlFields'
             ..type = MethodType.getter
             ..lambda = true
             ..returns = const Reference('List<GQLField>')
@@ -255,7 +329,7 @@ class GQLParser {
                 (b) => b..code = new Code((b) => b..code = 'override'))))
           : null,
       new Method((b) => b
-        ..name = 'clone'
+        ..name = 'gqlClone'
         ..returns = new Reference(operationName)
         ..lambda = true
         ..body = new Code((b) => b..code = cloneMethodFields)

@@ -22,7 +22,7 @@ class GQLEncoder extends Converter<GQLOperation, String> {
 
   List<GQLField> _extractFields(GQLField operation) {
     if (operation is Fields) {
-      return operation.fields;
+      return operation.gqlFields;
     }
 
     return const [];
@@ -30,7 +30,7 @@ class GQLEncoder extends Converter<GQLOperation, String> {
 
   List<GQLFragment> _extractFragments(GQLField operation) {
     if (operation is Fragments) {
-      return operation.fragments;
+      return operation.gqlFragments;
     }
     return const [];
   }
@@ -42,7 +42,7 @@ class GQLEncoder extends Converter<GQLOperation, String> {
         .toList();
 
     if (operation is Fragments) {
-      fragments.addAll(operation.fragments);
+      fragments.addAll(operation.gqlFragments);
     }
 
     return fragments;
@@ -51,9 +51,9 @@ class GQLEncoder extends Converter<GQLOperation, String> {
   String _encodeOperation(GQLOperation operation) {
     final GQLField field = operation;
     final rootField = _encodeOperationFields(operation);
-    final args = (field is Arguments) ? field.args : '';
+    final args = (field is Arguments) ? field.gqlArguments : '';
 
-    return '${operation.type} ${operation.name} $args { $rootField }';
+    return '${operation.gqlType} ${operation.gqlName} $args { $rootField }';
   }
 
   String _encodeOperationFields(GQLField operation) =>
@@ -69,18 +69,18 @@ class GQLEncoder extends Converter<GQLOperation, String> {
     final rootField = _encodeOperationFields(fragment);
     final fragmentsGQL = _encodeNestedOperationFragments(fragment);
 
-    return 'fragment ${fragment.name} on ${fragment.onType} { $rootField }${fragmentsGQL.isNotEmpty ? fragmentsGQL : ''}';
+    return 'fragment ${fragment.gqlName} on ${fragment.gqlOnType} { $rootField }${fragmentsGQL.isNotEmpty ? fragmentsGQL : ''}';
   }
 
   String _encodeField(GQLField operation) {
     final childrenGQL = _encodeOperationFields(operation);
     final childrenFragment = _encodeOperationInlineFragments(operation);
 
-    final alias = (operation is Alias) ? '${operation.alias}: ' : '';
-    final name = operation.name != null ? '${operation.name} ' : '';
-    final args = (operation is Arguments) ? '${operation.args} ' : '';
+    final alias = (operation is Alias) ? '${operation.gqlAlias}: ' : '';
+    final name = operation.gqlName != null ? '${operation.gqlName} ' : '';
+    final args = (operation is Arguments) ? '${operation.gqlArguments} ' : '';
     final directive =
-        (operation is Directives) ? '${operation.directives} ' : '';
+        (operation is Directives) ? '${operation.gqlDirectives} ' : '';
     final fields = (childrenGQL.isNotEmpty || childrenFragment.isNotEmpty)
         ? '{ $childrenGQL $childrenFragment }'
         : '';
@@ -88,5 +88,5 @@ class GQLEncoder extends Converter<GQLOperation, String> {
     return '$alias$name$args$directive$fields';
   }
 
-  String _encodeInlineFragment(GQLFragment fragment) => '...${fragment.name}';
+  String _encodeInlineFragment(GQLFragment fragment) => '...${fragment.gqlName}';
 }

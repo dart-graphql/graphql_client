@@ -1,5 +1,0 @@
-query FetchLogin {
-  viewer {
-    login
-  }
-}

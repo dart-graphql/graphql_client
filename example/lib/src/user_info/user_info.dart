@@ -2,6 +2,11 @@
 // Use of this source code is governed by a MIT-style license
 // that can be found in the LICENSE file.
 
-library graphql_client_generator;
-
-export 'src/builder.dart';
+class UserInfo {
+  String login;
+  String email;
+  String bio;
+  String location;
+  String company;
+  String avatarUrl;
+}

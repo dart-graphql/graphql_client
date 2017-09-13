@@ -1,0 +1,18 @@
+<h2>Connected user</h2>
+
+<div class="horizontal-container">
+    <material-spinner *ngIf="!hasUserInfo"></material-spinner>
+    <div class="horizontal-container" *ngIf="hasUserInfo && userInfo != null">
+        <material-list >
+            <material-list-item>{{ userInfo.login }}</material-list-item>
+            <material-list-item>{{ userInfo.bio }}</material-list-item>
+            <material-list-item>{{ userInfo.location }}</material-list-item>
+        </material-list>
+        <img [src]="userInfo.avatarUrl" />
+    </div>
+    <div class="error" *ngIf="hasUserInfo && error != null">
+        {{ error }}
+    </div>
+</div>
+
+

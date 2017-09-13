@@ -16,5 +16,5 @@ part of graphql_client.definitions;
 /// ```
 abstract class Directives implements GQLField {
   /// The GQL directive.
-  String get directives;
+  String get gqlDirectives;
 }

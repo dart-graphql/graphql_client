@@ -3,28 +3,14 @@
 
 import 'package:angular/angular.dart';
 import 'package:angular_components/angular_components.dart';
-import 'package:graphql_client/graphql_client.dart';
 
-import 'fetch_login.g.dart';
+import 'src/user_info/user_profile_component.dart';
 
 @Component(
   selector: 'my-app',
   styleUrls: const ['app_component.css'],
   templateUrl: 'app_component.html',
-  directives: const [materialDirectives],
+  directives: const [UserProfileComponent],
   providers: const [materialProviders],
 )
-class AppComponent implements OnInit {
-  GQLClient _gqlClient;
-
-  String username;
-
-  AppComponent(this._gqlClient);
-
-  @override
-  ngOnInit() async {
-    final res = await _gqlClient.execute(new FetchLoginQuery());
-
-    username = res.viewer.login.value;
-  }
-}
+class AppComponent {}

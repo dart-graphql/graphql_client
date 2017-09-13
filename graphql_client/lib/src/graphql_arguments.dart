@@ -16,5 +16,5 @@ part of graphql_client.definitions;
 /// ```
 abstract class Arguments implements GQLField {
   /// The GQL argument.
-  String get args;
+  String get gqlArguments;
 }

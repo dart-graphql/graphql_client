@@ -50,12 +50,12 @@ class GQLClient {
       final requestBody = {
         'query': GRAPHQL.encode(operation),
         'variables': variables,
-        'operationName': operation.name,
+        'operationName': operation.gqlName,
       };
 
       logMessage(
           Level.INFO,
-          'Posting GQL query to $endPoint with operation ${operation.name}',
+          'Posting GQL query to $endPoint with operation ${operation.gqlName}',
           logger);
       logMessage(Level.FINE, 'with body GQL request to $requestBody', logger);
 
@@ -121,7 +121,7 @@ class GQLClient {
 
   void _resolveFields(GQLField operation, Map data) {
     if (operation is Fields) {
-      for (var field in operation.fields) {
+      for (var field in operation.gqlFields) {
         _resolve(field, data);
       }
     }
@@ -129,18 +129,18 @@ class GQLClient {
 
   void _resolveFragments(GQLField operation, Map data) {
     if (operation is Fragments) {
-      for (var fragment in operation.fragments) {
+      for (var fragment in operation.gqlFragments) {
         _resolveFields(fragment, data);
       }
     }
   }
 
   void _resolve(GQLField resolver, Map data) {
-    final key = (resolver is Alias) ? resolver.alias : resolver.name;
+    final key = (resolver is Alias) ? resolver.gqlAlias : resolver.gqlName;
     final fieldData = data[key];
 
     if (resolver is Scalar) {
-      resolver.value = fieldData;
+      resolver.gqlValue = fieldData;
     } else if (resolver is ScalarCollection) {
       final nodeResolver = resolver.nodesResolver;
       final edgeResolver = resolver.edgesResolver;
@@ -152,7 +152,7 @@ class GQLClient {
 
       if (nodeResolver != null) {
         resolver.nodes =
-            new List.generate(nodesData.length, (_) => nodeResolver.clone());
+            new List.generate(nodesData.length, (_) => nodeResolver.gqlClone());
 
         for (var i = 0; i < nodesData.length; i++) {
           _resolveQuery(resolver.nodes[i], nodesData[i]);
@@ -161,7 +161,7 @@ class GQLClient {
 
       if (edgeResolver != null) {
         resolver.edges =
-            new List.generate(nodesData.length, (_) => edgeResolver.clone());
+            new List.generate(nodesData.length, (_) => edgeResolver.gqlClone());
 
         for (var i = 0; i < edgesData.length; i++) {
           _resolveQuery(resolver.edges[i], edgesData[i]);

@@ -31,5 +31,5 @@ part of graphql_client.definitions;
 /// Description is a nested field of the `gist` field.
 abstract class Fields implements GQLField {
   /// The list of nested fields of this field.
-  List<GQLField> get fields => const [];
+  List<GQLField> get gqlFields => const [];
 }

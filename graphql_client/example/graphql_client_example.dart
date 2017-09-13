@@ -47,22 +47,22 @@ Future main() async {
     );
 
     print('=== . ===');
-    print(queryRes.viewer.login.value);
-    print(queryRes.viewer.bio.value);
-    print(queryRes.viewer.bio2.value);
+    print(queryRes.viewer.login.gqlValue);
+    print(queryRes.viewer.bio.gqlValue);
+    print(queryRes.viewer.bio2.gqlValue);
 
     print('=== .repository ===');
-    print(queryRes.viewer.repository.createdAt.value);
-    print(queryRes.viewer.repository.description.value);
-    print(queryRes.viewer.repository.id.value);
-    print(queryRes.viewer.repository.repoName.value);
+    print(queryRes.viewer.repository.createdAt.gqlValue);
+    print(queryRes.viewer.repository.description.gqlValue);
+    print(queryRes.viewer.repository.id.gqlValue);
+    print(queryRes.viewer.repository.repoName.gqlValue);
 
     print('=== .gist ===');
-    print(queryRes.viewer.gist.description.value);
+    print(queryRes.viewer.gist.description.gqlValue);
 
     print('=== .repositories ===');
     for (var n in queryRes.viewer.repositories.nodes) {
-      print(n.repoName.value);
+      print(n.repoName.gqlValue);
     }
   } on GQLException catch (e) {
     print(e.message);
@@ -83,7 +83,7 @@ Future main() async {
     );
 
     print('=== .body ===');
-    print(mutationRes.addComment.commentEdge.node.body.value);
+    print(mutationRes.addComment.commentEdge.node.body.gqlValue);
   } on GQLException catch (e) {
     print(e.message);
     print(e.gqlErrors);

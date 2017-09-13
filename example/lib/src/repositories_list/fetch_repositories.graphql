@@ -1,0 +1,14 @@
+query FetchUserRepositories($limit: Int = 5, $nextID: String) {
+  viewer {
+    repositories(first: $limit, after: $nextID) {
+      nodes {
+        name
+        description
+        url
+      }
+      edges {
+        cursor
+      }
+    }
+  }
+}
