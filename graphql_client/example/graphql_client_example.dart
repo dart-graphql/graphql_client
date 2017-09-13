@@ -61,7 +61,7 @@ Future main() async {
     print(queryRes.viewer.gist.description.gqlValue);
 
     print('=== .repositories ===');
-    for (var n in queryRes.viewer.repositories.nodes) {
+    for (var n in queryRes.viewer.repositories.nodes.gqlValue) {
       print(n.repoName.gqlValue);
     }
   } on GQLException catch (e) {

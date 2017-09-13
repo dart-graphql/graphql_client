@@ -1,3 +1,11 @@
 <h1>Github Explorer</h1>
 
-<gql-user-profile></gql-user-profile>
+<gql-user-profile (error)="onErrorMessage($event)"></gql-user-profile>
+<gql-repositories-list
+        (error)="onErrorMessage($event)"
+        (select)="onSelectRepository($event)"
+></gql-repositories-list>
+<gql-repository-detail [repository]="selectedRepository"></gql-repository-detail>
+
+<h3 *ngIf="errorMessages.isNotEmpty">Errors</h3>
+<gql-error *ngFor="let errorMessage of errorMessages" [message]="errorMessage" ></gql-error>

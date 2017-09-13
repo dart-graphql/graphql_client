@@ -1,0 +1,10 @@
+query FetchUserRepositories($limit: Int = 5, $offset: String) {
+  viewer {
+    repositories(first: $limit, after: $offset) {
+      nodes {
+        id
+        name
+      }
+    }
+  }
+}

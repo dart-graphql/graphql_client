@@ -1,0 +1,16 @@
+<h2>User repositories</h2>
+
+<div class="horizontal-container">
+    <material-spinner *ngIf="repositories == null"></material-spinner>
+    <div class="horizontal-container" *ngIf="repositories != null">
+        <material-list>
+            <gql-repository-item
+                    *ngFor="let repository of repositories"
+                    [repository]="repository"
+                    (click)="selectRepository(repository)"
+            ></gql-repository-item>
+        </material-list>
+    </div>
+</div>
+
+

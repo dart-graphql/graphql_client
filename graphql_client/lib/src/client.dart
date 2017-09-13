@@ -18,7 +18,7 @@ import 'utils.dart';
 
 /// A GQL client.
 class GQLClient {
-  /// The HTTP [Client] the the [GQLClient] will use.
+  /// The HTTP [Client] that the [GQLClient] will use.
   final Client client;
 
   /// A [Logger] that the [GQLClient] could use to report query execution status.
@@ -141,32 +141,15 @@ class GQLClient {
 
     if (resolver is Scalar) {
       resolver.gqlValue = fieldData;
-    } else if (resolver is ScalarCollection) {
-      final nodeResolver = resolver.nodesResolver;
-      final edgeResolver = resolver.edgesResolver;
-      final nodesData = fieldData['nodes'];
-      final edgesData = fieldData['edges'];
-      final totalCountData = fieldData['totalCount'];
+    } else if (resolver is Collection) {
+      final List listValue = fieldData;
 
-      resolver.totalCount = totalCountData;
+      resolver.gqlValue = new List.generate(listValue.length, (index) {
+        final clonedResolver = resolver.gqlClone();
+        _resolveQuery(clonedResolver, listValue[index]);
 
-      if (nodeResolver != null) {
-        resolver.nodes =
-            new List.generate(nodesData.length, (_) => nodeResolver.gqlClone());
-
-        for (var i = 0; i < nodesData.length; i++) {
-          _resolveQuery(resolver.nodes[i], nodesData[i]);
-        }
-      }
-
-      if (edgeResolver != null) {
-        resolver.edges =
-            new List.generate(nodesData.length, (_) => edgeResolver.gqlClone());
-
-        for (var i = 0; i < edgesData.length; i++) {
-          _resolveQuery(resolver.edges[i], edgesData[i]);
-        }
-      }
+        return clonedResolver;
+      });
     } else {
       _resolveQuery(resolver, fieldData);
     }

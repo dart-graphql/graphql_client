@@ -18,20 +18,7 @@ abstract class Scalar<T> implements GQLField {
 /// It could be applied as a mixin on a [GQLField].
 /// This mixin should be used on a field that is a collection
 /// (ie. has the GQL List type).
-abstract class ScalarCollection<N extends GQLField, E extends GQLField>
-    implements GQLField {
-  /// The nodes collection of [GQLField].
-  List<N> nodes;
-
-  /// The edges collection of [GQLField].
-  List<E> edges;
-
-  /// The collection length of [GQLField].
-  int totalCount;
-
-  /// Returns the node [GQLField] that will be used to resolve each list item.
-  GQLField get nodesResolver => null;
-
-  /// Returns the edge [GQLField] that will be used to resolve each list item.
-  GQLField get edgesResolver => null;
+abstract class Collection<T extends GQLField> implements GQLField {
+  /// The collection of [GQLField].
+  List<T> gqlValue;
 }

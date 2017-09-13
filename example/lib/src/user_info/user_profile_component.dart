@@ -2,6 +2,8 @@
 // Use of this source code is governed by a MIT-style license
 // that can be found in the LICENSE file.
 
+import 'dart:async';
+
 import 'package:angular/angular.dart';
 import 'package:angular_components/angular_components.dart';
 import 'package:graphql_client/graphql_client.dart';
@@ -18,10 +20,9 @@ import 'user_info.dart';
 )
 class UserProfileComponent implements OnInit {
   UserService _userService;
+  final _errorController = new StreamController<String>();
 
-  bool hasUserInfo = false;
   UserInfo userInfo;
-  String error;
 
   UserProfileComponent(this._userService);
 
@@ -30,12 +31,10 @@ class UserProfileComponent implements OnInit {
     try {
       userInfo = await _userService.getUserInformation();
     } on GQLException catch (e) {
-      error = '''
-      ${e.message}
-      ${e.gqlErrors.toString()}
-      ''';
-    } finally {
-      hasUserInfo = true;
+      _errorController.add('${e.message}${e.gqlErrors.toString()}');
     }
   }
+
+  @Output()
+  Stream<String> get error => _errorController.stream;
 }

@@ -13,3 +13,10 @@ body {
 * {
   font-family: Roboto, Helvetica, Arial, sans-serif;
 }
+
+.horizontal-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+}

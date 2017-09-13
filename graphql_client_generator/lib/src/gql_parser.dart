@@ -10,7 +10,17 @@ class GQLParser {
     final parser = new Parser(scan(gql));
     final document = parser.parseDocument();
 
-    return parseOperation(document.definitions.first);
+    final specs = [];
+
+    document.definitions.forEach((d) {
+      if (d is OperationDefinitionContext) {
+        specs.addAll(parseOperation(d));
+      } else if (d is FragmentDefinitionContext) {
+        print(d);
+      }
+    });
+
+    return specs;
   }
 
   List<Spec> parseOperation(OperationDefinitionContext operation) {
@@ -38,14 +48,10 @@ class GQLParser {
     selections.forEach((s) {
       final field = s.field;
 
-      if (isScalarFieldResolver(field)) {
-        specs.add(parseField(field));
-      } else {
-        // TODO: parse collection field Resolver (nodes & edges)
+      specs.add(parseField(field));
 
-        specs
-          ..add(parseField(field))
-          ..addAll(parseSelections(field.selectionSet.selections, []));
+      if (!isScalarFieldResolver(field)) {
+        specs.addAll(parseSelections(field.selectionSet.selections, []));
       }
     });
 
@@ -78,9 +84,8 @@ class GQLParser {
   bool isScalarFieldResolver(FieldContext field) =>
       field.selectionSet == null || field.selectionSet.selections.isEmpty;
 
-  bool isScalarCollectionFieldResolver(FieldContext field) =>
-      !isScalarFieldResolver(field) &&
-      field.selectionSet.selections.any((s) => isCollectionField(s.field));
+  bool isCollectionFieldResolver(FieldContext field) =>
+      !isScalarFieldResolver(field) && isCollectionField(field);
 
   bool hasNestedNamedField(FieldContext field, String name) =>
       !isScalarFieldResolver(field) &&
@@ -120,26 +125,6 @@ class GQLParser {
         final nestedField = s.field;
         final nestedResolverName = getResolverName(nestedField);
 
-        if (isCollectionField(nestedField)) {
-          var collectionResolverName = '';
-
-          if (isNamedField(nestedField, 'nodes')) {
-            collectionResolverName = 'nodesResolver';
-          }
-
-          if (isNamedField(nestedField, 'edges')) {
-            collectionResolverName = 'edgesResolver';
-          }
-
-          return new Field((b) => b
-            ..name = collectionResolverName
-            ..type = new Reference(nestedResolverName)
-            ..annotations.add(new Annotation(
-                (b) => b..code = new Code((b) => b..code = 'override')))
-            ..assignment =
-                new Code((b) => b..code = 'new $nestedResolverName()'));
-        }
-
         return new Field((b) => b
           ..name = getFieldAlias(nestedField) ?? getFieldName(nestedField)
           ..type = new Reference(nestedResolverName)
@@ -152,18 +137,12 @@ class GQLParser {
     final arguments = getFieldArguments(field);
     final directives = getFieldDirectives(field);
 
-    final hasNodesResolver = hasNestedNamedField(field, 'nodes');
-    final hasEdgesResolver = hasNestedNamedField(field, 'edges');
-
-    final scalarCollectionGenerics =
-        '<${hasNodesResolver ? 'NodesResolver' : 'Null'},${hasEdgesResolver ? 'EdgesResolver' : 'Null'}>';
-
     return [
       isScalarFieldResolver(field)
           ? const Reference('Scalar')
           : const Reference('Fields'),
-      isScalarCollectionFieldResolver(field)
-          ? new Reference('ScalarCollection$scalarCollectionGenerics')
+      isCollectionFieldResolver(field)
+          ? const Reference('Collection<NodesResolver>')
           : null,
       alias != null ? const Reference('Alias') : null,
       arguments.isNotEmpty ? const Reference('Arguments') : null,

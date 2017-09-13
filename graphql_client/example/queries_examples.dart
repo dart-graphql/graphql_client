@@ -170,7 +170,9 @@ class ViewerResolver extends Object with Alias, Fields implements GQLField {
     ..bio2 = bio2.gqlClone();
 }
 
-class NodesResolver extends Object with Fields implements GQLField {
+class NodesResolver extends Object
+    with Fields, Collection<NodesResolver>
+    implements GQLField {
   NameResolver repoName = new NameResolver();
 
   @override
@@ -323,10 +325,9 @@ class RepositoryIdFragmentResolver extends Object
  */
 
 class RepositoriesResolver extends Object
-    with Arguments, Alias, ScalarCollection<NodesResolver, Null>, Fields
+    with Arguments, Alias, Fields
     implements GQLField {
-  @override
-  NodesResolver nodesResolver = new NodesResolver();
+  NodesResolver nodes = new NodesResolver();
 
   @override
   String get gqlName => 'repositories';
@@ -335,12 +336,12 @@ class RepositoriesResolver extends Object
   String get gqlArguments => '(first: 5)';
 
   @override
-  List<GQLField> get gqlFields => [nodesResolver];
+  List<GQLField> get gqlFields => [nodes];
 
   @override
   RepositoriesResolver gqlClone() => new RepositoriesResolver()
     ..gqlAliasId = gqlAliasId
-    ..nodesResolver = nodesResolver.gqlClone();
+    ..nodes = nodes.gqlClone();
 }
 
 /**

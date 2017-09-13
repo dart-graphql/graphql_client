@@ -1,0 +1,12 @@
+query SearchRepository($id: ID!) {
+  node(id: $id) {
+    ...RepositoryInfo
+  }
+}
+
+fragment RepositoryInfo on Repository {
+  id
+  name
+  createdAt
+  description
+}
