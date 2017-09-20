@@ -2,7 +2,8 @@
 // Use of this source code is governed by a MIT-style license
 // that can be found in the LICENSE file.
 
-library graphql_client_generator;
+class GQLSettings {
+  final List<String> collectionFields;
 
-export 'src/builder.dart';
-export 'src/settings.dart';
+  GQLSettings({this.collectionFields = const ['nodes', 'edges']});
+}

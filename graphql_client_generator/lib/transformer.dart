@@ -4,10 +4,15 @@
 
 library graphql_client_generator.transformer;
 
+import 'package:barback/barback.dart';
 import 'package:build_barback/build_barback.dart';
 
+import 'package:graphql_client_generator/src/settings.dart';
 import 'package:graphql_client_generator/src/builder.dart';
 
 class GQLTransformer extends BuilderTransformer {
-  GQLTransformer.asPlugin(_) : super(new GQLBuilder());
+  GQLTransformer.asPlugin(BarbackSettings settings)
+      : super(new GQLBuilder(new GQLSettings(
+          collectionFields: settings.configuration['collectionFields'],
+        )));
 }

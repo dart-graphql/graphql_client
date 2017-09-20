@@ -7,7 +7,9 @@ import 'package:graphql_client_generator/graphql_client_generator.dart';
 
 final phases = [
   new BuildAction(
-    new GQLBuilder(),
+    new GQLBuilder(new GQLSettings(
+      collectionFields: const ['nodes', 'edges'],
+    )),
     new PackageGraph.forThisPackage().root.name,
     inputs: const ['**/*.graphql'],
   ),

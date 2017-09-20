@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style license
 // that can be found in the LICENSE file.
 
-library graphql_client_generator.renderers;
+library graphql_client_generator.builder;
 
 import 'package:path/path.dart';
 import 'package:build/build.dart';

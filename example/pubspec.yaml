@@ -5,7 +5,7 @@ version: 0.0.1
 #author: Thomas Hourlier <email@example.com>
 
 environment:
-  sdk: '>=1.24.0 <2.0.0'
+  sdk: '>=1.24.0 <3.0.0'
 
 dependencies:
   angular: ^4.0.0
@@ -21,6 +21,8 @@ dev_dependencies:
   build_runner: ^0.4.0
 
 dependency_overrides:
+# we won't need this when angular 5 will be released
+  code_builder: ^2.0.0-alpha+1
   graphql_client:
     path: ../graphql_client
   graphql_client_generator:
@@ -34,3 +36,12 @@ transformers:
 - test/pub_serve:
     $include: test/**_test.dart
 - dart_to_js_script_rewriter
+# graphql_client_generator transformer, should not be used
+#- graphql_client_generator:
+#    collectionFields:
+#      - nodes
+#      - edges
+
+web:
+  compiler:
+    debug: dartdevc
