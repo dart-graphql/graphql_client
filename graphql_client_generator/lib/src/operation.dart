@@ -4,17 +4,24 @@
 
 part of graphql_client_generator.parser;
 
-class GQLOperationGenerator extends Object with Selection {
+class GQLOperationGenerator extends Object
+    with SelectionSet
+    implements Generable {
   final OperationDefinitionContext _operationContext;
+  final Map<String, GQLFragmentGenerator> _fragmentsMap;
   final GQLSettings _settings;
 
-  GQLOperationGenerator(this._operationContext, this._settings);
+  GQLOperationGenerator(
+      this._operationContext, this._fragmentsMap, this._settings);
 
   @override
   SelectionSetContext get selectionSetContext => _operationContext.selectionSet;
 
   @override
   GQLSettings get settings => _settings;
+
+  @override
+  Map<String, GQLFragmentGenerator> get fragmentsMap => _fragmentsMap;
 
   String get name => _operationContext.name;
 
@@ -105,4 +112,15 @@ class GQLOperationGenerator extends Object with Selection {
             (b) => b..code = new Code((b) => b..code = 'override')))),
     ].where((m) => m != null).toList();
   }
+
+  @override
+  List<Spec> generate() => [
+        new Class((b) => b
+          ..name = operationName
+          ..extend = const Reference('Object')
+          ..mixins.addAll(mixin)
+          ..implements.add(const Reference('GQLOperation'))
+          ..methods.addAll(methods)
+          ..fields.addAll(fields))
+      ]..addAll(parseSelections(fieldsGenerators, []));
 }

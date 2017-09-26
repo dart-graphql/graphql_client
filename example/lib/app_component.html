@@ -5,7 +5,7 @@
         (error)="onErrorMessage($event)"
         (select)="onSelectRepository($event)"
 ></gql-repositories-list>
-<gql-repository-detail [repository]="selectedRepository"></gql-repository-detail>
+<gql-repository-detail *ngIf="selectedRepository != null" [repository]="selectedRepository"></gql-repository-detail>
 
 <h3 *ngIf="errorMessages.isNotEmpty">Errors</h3>
 <gql-error *ngFor="let errorMessage of errorMessages" [message]="errorMessage" ></gql-error>

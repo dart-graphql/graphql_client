@@ -7,4 +7,5 @@ class Repository {
   String name;
   String createdAt;
   String description;
+  bool isFork;
 }

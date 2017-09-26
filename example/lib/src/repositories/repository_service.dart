@@ -9,7 +9,7 @@ import 'package:graphql_client/graphql_client.dart';
 
 import 'repository.dart';
 import 'fetch_repositories.g.dart';
-//import 'search_repository.g.dart';
+import 'search_repository.g.dart';
 
 @Injectable()
 class RepositoryService {
@@ -17,18 +17,18 @@ class RepositoryService {
 
   RepositoryService(this._gqlClient);
 
-//  Future<Repository> getRepository(String id) async {
-//    final res =
-//        await _gqlClient.execute(new SearchRepositoryQuery(), variables: {
-//      'id': id,
-//    });
-//
-//    return new Repository()
-//      ..id = res.node.id.gqlValue
-//      ..name = res.node.name.gqlValue
-//      ..createdAt = res.node.createdAt.gqlValue
-//      ..description = res.node.description.gqlValue;
-//  }
+  Future<Repository> getRepository(String id) async {
+    final res =
+        await _gqlClient.execute(new SearchRepositoryQuery(), variables: {
+      'id': id,
+    });
+
+    return new Repository()
+      ..id = res.node.id.gqlValue
+      ..name = res.node.name.gqlValue
+      ..createdAt = res.node.createdAt.gqlValue
+      ..description = res.node.description.gqlValue;
+  }
 
   Future<List<Repository>> getRepositoriesList(
       {int limit, String offset}) async {

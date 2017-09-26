@@ -1,11 +1,11 @@
 query SearchRepository($id: ID!) {
   node(id: $id) {
-    ...RepositoryInfo
+    id
+    ...RepositoryName
   }
 }
 
-fragment RepositoryInfo on Repository {
-  id
+fragment RepositoryName on Repository {
   name
   createdAt
   description

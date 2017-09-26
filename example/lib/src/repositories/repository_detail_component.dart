@@ -18,7 +18,7 @@ import 'repository_service.dart';
   directives: const [CORE_DIRECTIVES, materialDirectives],
   providers: const [RepositoryService],
 )
-class RepositoryDetailComponent implements OnInit {
+class RepositoryDetailComponent implements OnInit, OnChanges {
   RepositoryService _repositoryService;
   final _errorController = new StreamController<String>();
 
@@ -29,11 +29,24 @@ class RepositoryDetailComponent implements OnInit {
 
   @override
   ngOnInit() async {
-//    try {
-//      repository = await _repositoryService.getRepository(repository.id);
-//    } on GQLException catch (e) {
-//      _errorController.add('${e.message}${e.gqlErrors.toString()}');
-//    }
+    _fetchSelectedRepository(repository);
+  }
+
+  @override
+  ngOnChanges(Map<String, SimpleChange> changes) async {
+    Repository rep = changes['repository'].currentValue;
+
+    _fetchSelectedRepository(rep);
+  }
+
+  Future<Repository> _fetchSelectedRepository(Repository repo) async {
+    try {
+      repository = await _repositoryService.getRepository(repo.id);
+    } on GQLException catch (e) {
+      _errorController.add('${e.message}${e.gqlErrors.toString()}');
+    }
+
+    return repository;
   }
 
   @Output()

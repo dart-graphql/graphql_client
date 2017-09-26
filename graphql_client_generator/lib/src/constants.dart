@@ -3,3 +3,4 @@
 // that can be found in the LICENSE file.
 
 const resolverSuffix = 'Resolver';
+const fragmentSuffix = 'Fragment';

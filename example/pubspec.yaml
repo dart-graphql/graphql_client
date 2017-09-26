@@ -18,7 +18,7 @@ dev_dependencies:
   browser: ^0.10.0
   dart_to_js_script_rewriter: ^1.0.1
   test: ^0.12.0
-  build_runner: ^0.4.0
+  build_runner: ^0.5.0
 
 dependency_overrides:
 # we won't need this when angular 5 will be released
