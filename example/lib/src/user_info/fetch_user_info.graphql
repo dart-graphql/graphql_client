@@ -4,5 +4,6 @@ query FetchUserInfo($avatarSize: Int) {
     bio
     location
     avatarUrl(size: $avatarSize)
+
   }
 }

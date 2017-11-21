@@ -10,6 +10,10 @@ import 'package:graphql_parser/graphql_parser.dart';
 import 'constants.dart';
 import 'settings.dart';
 
+import 'v2/visitor.dart' show GQLVisitor;
+import 'v2/generator.dart' show GQLGenerator;
+import 'v2/settings.dart' show GeneratorSettings;
+
 part 'field.dart';
 part 'fragment.dart';
 part 'operation.dart';
@@ -30,28 +34,10 @@ class GQLParser {
   GQLParser(this._settings);
 
   List<Spec> parse(String gql) {
-    final parser = new Parser(scan(gql));
-    final document = parser.parseDocument();
+    final visitor = new GQLVisitor(
+        new GeneratorSettings(collectionFields: _settings.collectionFields));
+    final generator = new GQLGenerator(visitor);
 
-    final Map<String, GQLFragmentGenerator> fragmentsMap = {};
-    final specs = [];
-
-    // extract fragments
-    document.definitions.where((d) => d is FragmentDefinitionContext).map((d) {
-      final fragment = new GQLFragmentGenerator(d, fragmentsMap, _settings);
-      fragmentsMap[fragment.name] = fragment;
-
-      return fragment;
-    }).toList()
-      ..forEach((f) => f.resolveFragmentsFamily(f))
-      ..forEach((f) => specs.addAll(f.generate()));
-
-    document.definitions
-        .where((d) => d is OperationDefinitionContext)
-        .map((d) => new GQLOperationGenerator(d, fragmentsMap, _settings))
-        .toList()
-          ..forEach((o) => specs.addAll(o.generate()));
-
-    return specs;
+    return generator.generate(gql);
   }
 }

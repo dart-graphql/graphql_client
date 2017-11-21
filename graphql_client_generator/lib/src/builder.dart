@@ -34,6 +34,8 @@ class GQLBuilder extends Builder {
 
     final gqlDefinitions = _parser.parse(gql);
 
+    print(gqlDefinitions);
+
     final code = _renderer.buildLibrary(
         outputId: outputId, gqlDefinitions: gqlDefinitions);
 
