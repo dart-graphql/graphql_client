@@ -22,7 +22,7 @@ Future main() async {
     });
 
   const endPoint = 'https://api.github.com/graphql';
-  final apiToken = Platform.environment['GITHUBQL_TOKEN'];
+  final apiToken = Platform.environment['GQL_GITHUB_TOKEN'];
 
   final client = new Client();
   final logger = new Logger('GQLClient');
