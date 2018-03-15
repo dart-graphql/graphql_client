@@ -38,7 +38,7 @@ class ViewerBioQuery extends Object with Fields implements GQLOperation {
   ViewerResolver viewer = new ViewerResolver();
 
   @override
-  OperationType get type => OperationType.query;
+  String get type => queryType;
 
   @override
   String get name => 'ViewerBioQuery';
