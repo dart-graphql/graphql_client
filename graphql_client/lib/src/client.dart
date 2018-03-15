@@ -158,7 +158,7 @@ class GQLClient {
 
       if (edgeResolver != null) {
         resolver.edges =
-            new List.generate(nodesData.length, (_) => edgeResolver.clone());
+            new List.generate(edgesData.length, (_) => edgeResolver.clone());
 
         for (var i = 0; i < edgesData.length; i++) {
           _resolveQuery(resolver.edges[i], edgesData[i]);
