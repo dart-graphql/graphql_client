@@ -42,7 +42,8 @@ class GQLClient {
   /// It waits for the response and throw a [GQLException] if the query has errors.
   /// Else, it resolves the query and return it.
   Future<T> execute<T extends GQLOperation>(T operation,
-      {Map variables = const {}, Map headers}) async {
+      {Map variables = const <String, dynamic>{},
+      Map<String, String> headers}) async {
     try {
       final requestBody = {
         'query': GRAPHQL.encode(operation),
@@ -59,7 +60,7 @@ class GQLClient {
       final res = await client.post(
         endPoint,
         headers: headers,
-        body: JSON.encode(requestBody),
+        body: json.encode(requestBody),
       );
 
       final data = _parseResponse(res);
@@ -87,10 +88,11 @@ class GQLClient {
   /// The [operationName] will determine which query to execute.
   Future<T> executeOperations<T extends GQLOperation>(
       Map<String, GQLOperation> operations, String operationName,
-      {Map variables = const {}, Map headers}) async {
-    final operation = operations[operationName];
+      {Map variables = const <String, dynamic>{},
+      Map<String, String> headers}) async {
+    final T operation = operations[operationName] as T;
 
-    return execute(operation, headers: headers, variables: variables);
+    return execute<T>(operation, headers: headers, variables: variables);
   }
 
   Map _parseResponse(Response response) {
@@ -101,14 +103,29 @@ class GQLClient {
       throw new ClientException('Network Error: $statusCode $reasonPhrase');
     }
 
-    final jsonResponse = JSON.decode(response.body);
-
-    if (jsonResponse['errors'] != null) {
-      throw new GQLException(
-          'Error returned by the server in the query', jsonResponse['errors']);
+    final dynamic jsonResponse = json.decode(response.body);
+    if (!(jsonResponse is Map)) {
+      // @todo more debug data
+      throw Exception('Malformed response from server');
     }
 
-    return jsonResponse['data'];
+    if (jsonResponse['errors'] != null) {
+      final dynamic errors = jsonResponse['errors'];
+      if (errors is List) {
+        throw GQLException('Error returned by the server in the query', errors.cast<Map>());
+      }
+      // @todo more debug data
+      throw Exception('Malformed response from server');
+    }
+
+    if(jsonResponse['data'] != null) {
+      final dynamic data = jsonResponse['data'];
+      if(data is Map) {
+        return data;
+      }
+    }
+    // @todo more debug data
+    throw Exception('Malformed response from server');
   }
 
   void _resolveQuery(GQLField operation, Map data) {
@@ -134,25 +151,25 @@ class GQLClient {
 
   void _resolve(GQLField resolver, Map data) {
     final key = (resolver is Alias) ? resolver.alias : resolver.name;
-    final fieldData = data[key];
+    final fieldData = data[key] as Map;
 
     if (resolver is Scalar) {
       resolver.value = fieldData;
     } else if (resolver is ScalarCollection) {
       final nodeResolver = resolver.nodesResolver;
       final edgeResolver = resolver.edgesResolver;
-      final nodesData = fieldData['nodes'];
-      final edgesData = fieldData['edges'];
-      final totalCountData = fieldData['totalCount'];
+      final nodesData = fieldData['nodes'] as List<Map>;
+      final edgesData = fieldData['edges'] as List<Map>;
+      final totalCountData = fieldData['totalCount'] as int;
 
       resolver.totalCount = totalCountData;
 
       if (nodeResolver != null) {
         resolver.nodes =
-            new List.generate(nodesData.length, (_) => nodeResolver.clone());
+            List.generate(nodesData.length, (_) => nodeResolver.clone());
 
-        for (var i = 0; i < nodesData.length; i++) {
-          _resolveQuery(resolver.nodes[i], nodesData[i]);
+        for (int i = 0; i < nodesData.length; i++) {
+          _resolveQuery(resolver.nodes[i], nodesData[i] as Map);
         }
       }
 

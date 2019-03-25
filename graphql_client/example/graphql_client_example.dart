@@ -40,8 +40,8 @@ Future main() async {
 
     final queryRes = await graphQLClient.execute(
       query,
-      variables: {'issueId': 'MDU6SXNzdWUyNDQzNjk1NTI', 'body': 'Test issue 2'},
-      headers: {
+      variables: <String, String>{'issueId': 'MDU6SXNzdWUyNDQzNjk1NTI', 'body': 'Test issue 2'},
+      headers: <String, String>{
         'Authorization': 'bearer $apiToken',
       },
     );
@@ -76,8 +76,8 @@ Future main() async {
 
     final mutationRes = await graphQLClient.execute(
       mutation,
-      variables: {'issueId': 'MDU6SXNzdWUyNDQzNjk1NTI', 'body': 'Test issue '},
-      headers: {
+      variables: <String, String>{'issueId': 'MDU6SXNzdWUyNDQzNjk1NTI', 'body': 'Test issue '},
+      headers: <String, String>{
         'Authorization': 'bearer $apiToken',
       },
     );
@@ -96,8 +96,8 @@ Future main() async {
 
     await graphQLClient.execute(
       mutation,
-      variables: {'issueId': 'efwef', 'body': 'Test issue'},
-      headers: {
+      variables: <String, String>{'issueId': 'efwef', 'body': 'Test issue'},
+      headers: <String, String>{
         'Authorization': 'bearer $apiToken',
       },
     );
