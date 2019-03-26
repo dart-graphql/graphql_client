@@ -62,7 +62,7 @@ class GQLClient {
       final res = await client.post(
         endPoint,
         headers: {}..addAll(defaultHeaders)..addAll(headers),
-        body: JSON.encode(requestBody),
+        body: json.encode(requestBody),
       );
 
       final data = _parseResponse(res);
@@ -90,10 +90,11 @@ class GQLClient {
   /// The [operationName] will determine which query to execute.
   Future<T> executeOperations<T extends GQLOperation>(
       Map<String, GQLOperation> operations, String operationName,
-      {Map variables = const {}, Map headers}) async {
-    final operation = operations[operationName];
+      {Map variables = const <String, dynamic>{},
+      Map<String, String> headers}) async {
+    final T operation = operations[operationName] as T;
 
-    return execute(operation, headers: headers, variables: variables);
+    return execute<T>(operation, headers: headers, variables: variables);
   }
 
   Map _parseResponse(Response response) {
@@ -104,14 +105,29 @@ class GQLClient {
       throw new ClientException('Network Error: $statusCode $reasonPhrase');
     }
 
-    final jsonResponse = JSON.decode(response.body);
-
-    if (jsonResponse['errors'] != null) {
-      throw new GQLException(
-          'Error returned by the server in the query', jsonResponse['errors']);
+    final dynamic jsonResponse = json.decode(response.body);
+    if (!(jsonResponse is Map)) {
+      // @todo more debug data
+      throw Exception('Malformed response from server');
     }
 
-    return jsonResponse['data'];
+    if (jsonResponse['errors'] != null) {
+      final dynamic errors = jsonResponse['errors'];
+      if (errors is List) {
+        throw GQLException('Error returned by the server in the query', errors.cast<Map>());
+      }
+      // @todo more debug data
+      throw Exception('Malformed response from server');
+    }
+
+    if(jsonResponse['data'] != null) {
+      final dynamic data = jsonResponse['data'];
+      if(data is Map) {
+        return data;
+      }
+    }
+    // @todo more debug data
+    throw Exception('Malformed response from server');
   }
 
   void _resolveQuery(GQLField operation, Map data) {

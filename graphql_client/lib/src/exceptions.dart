@@ -14,8 +14,8 @@ class Location {
 
   /// Constructs a [Location] from a JSON map.
   Location.fromJSON(Map data)
-      : line = data['line'],
-        column = data['column'];
+      : line = data['line'] as int,
+        column = data['column'] as int;
 
   @override
   String toString() => '{ line: $line, column: $column }';
@@ -58,9 +58,9 @@ class GQLException implements Exception {
   ///
   /// It requires a message and a JSON list from a GQL response
   /// (returned by a GQL server).
-  GQLException(this.message, List rawGQLError)
+  GQLException(this.message, List<Map<dynamic, dynamic>> rawGQLError)
       : gqlErrors =
-            new List.from(rawGQLError.map((d) => new GQLError.fromJSON(d)));
+            List<GQLError>.from(rawGQLError.map<GQLError>((d) => new GQLError.fromJSON(d)));
 
   @override
   String toString() =>
