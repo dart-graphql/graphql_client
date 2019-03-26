@@ -14,3 +14,6 @@ doc/api/
 
 # GraphQL IDE completion
 graphql.config.json
+
+# IDE
+.idea
