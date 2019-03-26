@@ -2,8 +2,8 @@
 
 GraphQL Client written in Dart 🎯.
 
-It relies on the [dart http client][http] to send GQL queries. As the **http** client, tt's platform-independent, 
-and can be used on the command-line, browser and flutter.
+It relies on the [dart http client][http] to send GQL queries. As the **http** client is platform-independent, 
+and can be used on the command-line, browser and [Flutter](https://flutter.io).
 It has a custom DSL to write GQL queries.
 
 ## Usage
