@@ -30,7 +30,7 @@ class GQLError {
   final List<Location> locations;
 
   /// The path of the field in error.
-  final List<String> path;
+  final List<dynamic> path;
 
   /// Constructs a [GQLError] from a JSON map.
   GQLError.fromJSON(Map data)

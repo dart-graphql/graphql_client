@@ -20,5 +20,6 @@ abstract class Scalar<T> implements GQLField {
 /// (ie. has the GQL List type).
 abstract class Collection<T extends GQLField> implements GQLField {
   /// The collection of [GQLField].
-  List<T> gqlValue;
+  // @todo should use T instead
+  List<GQLField> gqlValue;
 }
