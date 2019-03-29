@@ -24,10 +24,10 @@ class GQLConverter extends Codec<GQLOperation, String> {
   /// Throws a [StateError] as this is not supported.
   @override
   Converter<String, GQLOperation> get decoder =>
-      throw new StateError("Not supported. You can't decode a GraphQL query.");
+      throw StateError("Not supported. You can't decode a GraphQL query.");
 }
 
 /// An immutable [GQLConverter] instance.
 ///
 /// ignore: constant_identifier_names
-const GQLConverter GRAPHQL = const GQLConverter();
+const GQLConverter GRAPHQL = GQLConverter();

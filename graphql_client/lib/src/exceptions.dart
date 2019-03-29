@@ -36,9 +36,9 @@ class GQLError {
   GQLError.fromJSON(Map data)
       : message = data['message'] as String,
         locations = List<Location>.from(
-          (data['locations'] as Iterable<Map>).map<Location>((d) => new Location.fromJSON(d)),
+          (data['locations'] as List<dynamic>).cast<Map>().map<Location>((d) => Location.fromJSON(d)),
         ),
-        path = data['path'] as List<String>;
+        path = (data['path'] as List<dynamic>).cast<String>();
 
   @override
   String toString() =>
@@ -53,13 +53,13 @@ class GQLException implements Exception {
   /// The list of [GQLError] in the response.
   final List<GQLError> gqlErrors;
 
-  /// Creates a new [GQLException].
+  /// Creates a [GQLException].
   ///
   /// It requires a message and a JSON list from a GQL response
   /// (returned by a GQL server).
   GQLException(this.message, List<Map<dynamic, dynamic>> rawGQLError)
       : gqlErrors =
-            List<GQLError>.from(rawGQLError.map<GQLError>((d) => new GQLError.fromJSON(d)));
+            List<GQLError>.from(rawGQLError.map<GQLError>((d) => GQLError.fromJSON(d)));
 
   @override
   String toString() =>

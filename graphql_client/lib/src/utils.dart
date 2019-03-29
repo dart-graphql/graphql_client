@@ -8,7 +8,7 @@ import 'dart:math';
 
 import 'package:logging/logging.dart';
 
-final _rng = new Random();
+final _rng = Random();
 
 /// Returns a random number.
 ///

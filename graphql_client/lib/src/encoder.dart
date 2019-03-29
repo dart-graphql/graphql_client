@@ -13,9 +13,9 @@ class GQLEncoder extends Converter<GQLOperation, String> {
   const GQLEncoder();
 
   @override
-  String convert(GQLOperation operation) {
-    final operationGQL = _encodeOperation(operation);
-    final fragmentsGQL = _encodeNestedOperationFragments(operation);
+  String convert(GQLOperation input) {
+    final operationGQL = _encodeOperation(input);
+    final fragmentsGQL = _encodeNestedOperationFragments(input);
 
     return '$operationGQL\n$fragmentsGQL';
   }
