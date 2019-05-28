@@ -24,24 +24,24 @@ Future main() async {
   const endPoint = 'https://api.github.com/graphql';
   final apiToken = Platform.environment['GQL_GITHUB_TOKEN'];
 
-  final client = new Client();
-  final logger = new Logger('GQLClient');
-  final graphQLClient = new GQLClient(
+  final client = Client();
+  final logger = Logger('GQLClient');
+  final graphQLClient = GQLClient(
     client: client,
     logger: logger,
     endPoint: endPoint,
   );
 
-  final query = new LoginQuery();
-  final mutation = new AddTestCommentMutation();
+  final query = LoginQuery();
+  final mutation = AddTestCommentMutation();
 
   try {
     print('\n\n===================== TEST 1 =====================');
 
     final queryRes = await graphQLClient.execute(
       query,
-      variables: {'issueId': 'MDU6SXNzdWUyNDQzNjk1NTI', 'body': 'Test issue 2'},
-      headers: {
+      variables: <String, String>{'issueId': 'MDU6SXNzdWUyNDQzNjk1NTI', 'body': 'Test issue 2'},
+      headers: <String, String>{
         'Authorization': 'bearer $apiToken',
       },
     );
@@ -61,7 +61,8 @@ Future main() async {
     print(queryRes.viewer.gist.description.value);
 
     print('=== .repositories ===');
-    for (var n in queryRes.viewer.repositories.nodes) {
+    // @todo better if we don't have to cast here
+    for (var n in queryRes.viewer.repositories.nodes.cast<NodesResolver>()) {
       print(n.repoName.value);
     }
   } on GQLException catch (e) {
@@ -76,8 +77,8 @@ Future main() async {
 
     final mutationRes = await graphQLClient.execute(
       mutation,
-      variables: {'issueId': 'MDU6SXNzdWUyNDQzNjk1NTI', 'body': 'Test issue '},
-      headers: {
+      variables: <String, String>{'issueId': 'MDU6SXNzdWUyNDQzNjk1NTI', 'body': 'Test issue '},
+      headers: <String, String>{
         'Authorization': 'bearer $apiToken',
       },
     );
@@ -96,8 +97,8 @@ Future main() async {
 
     await graphQLClient.execute(
       mutation,
-      variables: {'issueId': 'efwef', 'body': 'Test issue'},
-      headers: {
+      variables: <String, String>{'issueId': 'efwef', 'body': 'Test issue'},
+      headers: <String, String>{
         'Authorization': 'bearer $apiToken',
       },
     );

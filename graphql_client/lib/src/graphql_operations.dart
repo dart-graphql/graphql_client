@@ -50,7 +50,7 @@ abstract class GQLOperation extends GQLField {
 /// /// class DescriptionFragmentResolver extends Object
 ///     with Fields
 ///     implements GQLField {
-///   DescriptionResolver description = new DescriptionResolver();
+///   DescriptionResolver description = DescriptionResolver();
 ///
 ///   @override
 ///   String get name => 'GistDescriptionFragment';

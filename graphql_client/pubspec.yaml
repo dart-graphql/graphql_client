@@ -1,11 +1,13 @@
 name: graphql_client
 description: A GraphQL client.
-version: 0.0.3
-homepage: https://github.com/hourliert/graphql_client
-author: Thomas Hourlier <hourliert@gmail.com>
+version: 0.0.4
+homepage: https://github.com/dart-graphql/graphql_client
+authors:
+  - Thomas Hourlier <hourliert@gmail.com>
+  - TruongSinh Tran-Nguyen <i@truongsinh.pro>
 
 environment:
-  sdk: '>=1.20.1 <2.0.0'
+  sdk: '>=2.2.0 <3.0.0'
 
 dependencies:
   http: ^0.11.3
@@ -13,4 +15,6 @@ dependencies:
   meta: ^1.1.1
 
 dev_dependencies:
-  test: ^0.12.0
+  mockito: ^4.0.0
+  test: ^1.5.3
+  perfectionist: ^2.0.0

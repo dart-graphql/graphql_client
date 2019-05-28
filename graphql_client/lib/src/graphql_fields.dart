@@ -13,7 +13,7 @@ part of graphql_client.definitions;
 /// generate the following GQL query.
 /// ```
 /// class GistResolver extends Object with Fields implements GQLField {
-///   DescriptionResolver description = new DescriptionResolver();
+///   DescriptionResolver description = DescriptionResolver();
 ///   @override
 ///   String get name => 'gist';
 ///

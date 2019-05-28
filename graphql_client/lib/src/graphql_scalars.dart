@@ -20,7 +20,9 @@ abstract class Scalar<T> implements GQLField {
 /// (ie. has the GQL List type).
 abstract class ScalarCollection<T extends GQLField> implements GQLField {
   /// The nodes collection of [GQLField].
-  List<T> nodes;
+  // List<T> nodes;
+  // @todo try to have List<T> nodes; back
+  List<GQLField> nodes;
 
   /// The edges collection of [GQLField].
   List<T> edges;

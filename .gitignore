@@ -16,3 +16,6 @@ graphql.config.json
 
 # IDE
 .idea
+
+# Dart tool
+.dart_tool

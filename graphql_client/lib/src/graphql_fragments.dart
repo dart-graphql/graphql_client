@@ -13,7 +13,7 @@ part of graphql_client.definitions;
 /// generate the following GQL query.
 /// ```
 /// class GistResolver extends Object with Fragments implements GQLField {
-///   DescriptionFragment descriptionFragment = new DescriptionFragment();
+///   DescriptionFragment descriptionFragment = DescriptionFragment();
 ///   @override
 ///   String get name => 'gist';
 ///
